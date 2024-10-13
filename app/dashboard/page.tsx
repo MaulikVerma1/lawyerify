@@ -144,7 +144,7 @@ export default function DashboardPage() {
     });
 
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, router, db]);
 
   const loadUserProgress = async (userId: string) => {
     const userDocRef = doc(db, 'users', userId)
@@ -322,8 +322,8 @@ export default function DashboardPage() {
     }
   };
 
-  const handleGeneratedAnswer = async (selected: string) => {
-    setSelectedAnswer(selected);
+  const handleGeneratedAnswer = (option: string) => {
+    setSelectedAnswer(option);
     setShowExplanation(true);
     if (user) {
       const userDocRef = doc(db, 'users', user.uid);
@@ -334,7 +334,7 @@ export default function DashboardPage() {
       const topicField = selectedTopic.replace(/\s+/g, '');
       updateData[`${topicField}Total`] = increment(1);
 
-      if (selected === currentGeneratedQuestion.correctAnswer) {
+      if (option === currentGeneratedQuestion.correctAnswer) {
         updateData[`R${topicField}`] = increment(1);
       }
 
@@ -347,7 +347,7 @@ export default function DashboardPage() {
     }
   };
 
-  const bookmarkQuestion = async () => {
+  const bookmarkQuestion = () => {
     if (user && currentGeneratedQuestion) {
       setIsBookmarked(!isBookmarked);
       const updatedBookmarks = isBookmarked
