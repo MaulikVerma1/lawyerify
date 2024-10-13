@@ -253,7 +253,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-yellow-900 text-center">
-            <p>&copy; 2024 Lawerify. All rights reserved.</p>
+            <p>&amp;copy; 2024 Lawerify. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -261,7 +261,7 @@ export default function HomePage() {
   )
 }
 
-function FeatureItem({ icon, title, description }) {
+function FeatureItem({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
     <div className="flex items-start space-x-3">
       {icon}
@@ -273,7 +273,7 @@ function FeatureItem({ icon, title, description }) {
   )
 }
 
-function TestimonialCard({ quote, author }) {
+function TestimonialCard({ quote, author }: { quote: string; author: string }) {
   return (
     <Card>
       <CardContent className="pt-6">
@@ -284,7 +284,7 @@ function TestimonialCard({ quote, author }) {
   )
 }
 
-function PricingCard({ title, price, features, highlighted = false }) {
+function PricingCard({ title, price, features, highlighted = false }: { title: string; price: string; features: string[]; highlighted?: boolean }) {
   return (
     <div className={`p-8 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105 ${
       highlighted ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-black' : 'bg-white text-black'
