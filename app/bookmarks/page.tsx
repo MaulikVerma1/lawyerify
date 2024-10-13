@@ -27,7 +27,7 @@ export default function BookmarksPage() {
 
       return () => unsubscribe()
     }
-  }, [auth, router])
+  }, [auth, router, db])
 
   const loadBookmarkedQuestions = async (userId: string) => {
     const userDocRef = doc(db, 'users', userId)
@@ -65,4 +65,3 @@ export default function BookmarksPage() {
     </div>
   )
 }
-
