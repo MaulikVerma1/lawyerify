@@ -102,7 +102,24 @@ function ProgressCard({ progress }) {
   )
 }
 
-export default async function DashboardPage() {
+function useUserProgress(userId: string | null) {
+  const [userProgress, setUserProgress] = useState(/* initial state */);
+
+  useEffect(() => {
+    if (userId) {
+      const loadUserProgress = async () => {
+        // Your existing loadUserProgress logic here
+        // ...
+        setUserProgress(loadedProgress);
+      };
+      loadUserProgress();
+    }
+  }, [userId]);
+
+  return userProgress;
+}
+
+export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
   const [showTest, setShowTest] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -110,34 +127,22 @@ export default async function DashboardPage() {
   const [showExplanation, setShowExplanation] = useState(false)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [testCompleted, setTestCompleted] = useState(false)
-  const [userProgress, setUserProgress] = useState({
-    latestTestScore: 0,
-    totalQuestionsAnswered: 0,
-    totalTestsCompleted: 0,
-    displayName: '',
-    testID: '',
-    RLogicalReasoning: 0,
-    RAnalyticalReasoning: 0,
-    RReadingComprehension: 0,
-    LogicalReasoningTotal: 0,
-    AnalyticalReasoningTotal: 0,
-    ReadingComprehensionTotal: 0,
-  })
-  const [selectedTopic, setSelectedTopic] = useState("");
-  const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState(null);
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState([]);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [testInProgress, setTestInProgress] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useState([])
+  const [testInProgress, setTestInProgress] = useState(false)
+  const [selectedTopic, setSelectedTopic] = useState(null)
+  const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [isBookmarked, setIsBookmarked] = useState(false)
   const router = useRouter()
   const { auth, db, isAuthenticated } = useFirebase()
+
+  const userProgress = useUserProgress(user?.uid);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        loadUserProgress(user.uid);
       } else {
         setUser(null);
       }
@@ -145,29 +150,6 @@ export default async function DashboardPage() {
 
     return () => unsubscribe();
   }, [auth, router, db]);
-
-  const loadUserProgress = async (userId: string) => {
-    const userDocRef = doc(db, 'users', userId)
-    const userDoc = await getDoc(userDocRef)
-    if (userDoc.exists()) {
-      const data = userDoc.data()
-      setUserProgress({
-        latestTestScore: data.latestTestScore || 0,
-        totalQuestionsAnswered: data.totalQuestionsAnswered || 0,
-        totalTestsCompleted: data.totalTestsCompleted || 0,
-        displayName: data.displayName || '',
-        testID: data.testID || '',
-        totalGeneratedQuestionsAnswered: data.totalGeneratedQuestionsAnswered || 0,
-        RLogicalReasoning: data.RLogicalReasoning || 0,
-        RAnalyticalReasoning: data.RAnalyticalReasoning || 0,
-        RReadingComprehension: data.RReadingComprehension || 0,
-        LogicalReasoningTotal: data.LogicalReasoningTotal || 0,
-        AnalyticalReasoningTotal: data.AnalyticalReasoningTotal || 0,
-        ReadingComprehensionTotal: data.ReadingComprehensionTotal || 0,
-      })
-      setBookmarkedQuestions(data.bookmarkedQuestions || [])
-    }
-  }
 
   const saveUserProgress = async () => {
     if (user) {
@@ -322,10 +304,10 @@ export default async function DashboardPage() {
     }
   };
 
-  const handleGeneratedAnswer = (option: string) => {
+  const handleGeneratedAnswer = async (option: string) => {
     setSelectedAnswer(option);
     setShowExplanation(true);
-    if (user) {
+    if (user && currentGeneratedQuestion) {
       const userDocRef = doc(db, 'users', user.uid);
       const updateData: any = {
         totalGeneratedQuestionsAnswered: increment(1),
@@ -334,20 +316,30 @@ export default async function DashboardPage() {
       const topicField = selectedTopic.replace(/\s+/g, '');
       updateData[`${topicField}Total`] = increment(1);
 
-      if (option === currentGeneratedQuestion.correctAnswer) {
+      const isCorrect = option === currentGeneratedQuestion.correctAnswer;
+      if (isCorrect) {
         updateData[`R${topicField}`] = increment(1);
       }
 
       try {
         await updateDoc(userDocRef, updateData);
-        await loadUserProgress(user.uid);
+        
+        // Update local state immediately for a responsive UI
+        setUserProgress(prevProgress => ({
+          ...prevProgress,
+          [`${topicField}Total`]: (prevProgress[`${topicField}Total`] || 0) + 1,
+          [`R${topicField}`]: isCorrect ? (prevProgress[`R${topicField}`] || 0) + 1 : prevProgress[`R${topicField}`] || 0,
+        }));
+
+        // Optionally, you can still call loadUserProgress to ensure all data is in sync
+        // await loadUserProgress(user.uid);
       } catch (error) {
         console.error("Error updating user progress:", error);
       }
     }
   };
 
-  const bookmarkQuestion = () => {
+  const bookmarkQuestion = async () => {
     if (user && currentGeneratedQuestion) {
       setIsBookmarked(!isBookmarked);
       const updatedBookmarks = isBookmarked
@@ -355,9 +347,13 @@ export default async function DashboardPage() {
         : [...bookmarkedQuestions, currentGeneratedQuestion];
       setBookmarkedQuestions(updatedBookmarks);
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
-        bookmarkedQuestions: updatedBookmarks,
-      });
+      try {
+        await updateDoc(userDocRef, {
+          bookmarkedQuestions: updatedBookmarks,
+        });
+      } catch (error) {
+        console.error("Error updating bookmarks:", error);
+      }
     }
   };
 
