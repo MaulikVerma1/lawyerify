@@ -102,7 +102,7 @@ function ProgressCard({ progress }) {
   )
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
   const [showTest, setShowTest] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
