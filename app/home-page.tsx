@@ -1,7 +1,6 @@
 "use client";
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
@@ -199,13 +198,9 @@ export default function HomePage() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-3xl filter blur-xl opacity-30 -rotate-6"></div>
                 <div className="relative rounded-3xl overflow-hidden shadow-xl">
-                  <Image 
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-DjJORlAk8irvVpaMP9FjFrICpRrrlT.png"
-                    alt="Lawerify Dashboard" 
-                    width={500}
-                    height={300}
-                    layout="responsive"
-                  />
+                  <div className="w-full h-[300px] bg-gray-300 flex items-center justify-center text-gray-600">
+                    Lawerify Dashboard
+                  </div>
                 </div>
               </div>
             </div>

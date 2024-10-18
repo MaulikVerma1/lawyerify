@@ -19,18 +19,15 @@ export default function LoginPage() {
   const { auth, signInWithGoogle } = useFirebase()
 
   useEffect(() => {
-    console.log('Login page: Auth object:', auth)
-    if (auth) {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        console.log('Login page: Auth state changed, user:', user)
-        if (user) {
-          console.log('Login page: User is authenticated, redirecting to dashboard')
-          router.push('/dashboard')
-        }
-      })
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Login page: Auth state changed, user:', user)
+      if (user) {
+        console.log('Login page: User is authenticated, redirecting to dashboard')
+        router.push('/dashboard')
+      }
+    })
 
-      return () => unsubscribe()
-    }
+    return () => unsubscribe()
   }, [auth, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,17 +35,11 @@ export default function LoginPage() {
     setError('')
     console.log('Login page: Attempting to log in')
 
-    if (!auth) {
-      console.error('Login page: Auth object is not available')
-      setError('Authentication service is not available. Please try again later.')
-      return
-    }
-
     try {
       console.log('Login page: Before Firebase auth call')
       await signInWithEmailAndPassword(auth, email, password)
       console.log('Login page: User logged in successfully')
-      router.push('/dashboard')
+      // The useEffect hook will handle the redirection
     } catch (error) {
       console.error('Login page: Error logging in:', error)
       setError('Failed to log in. Please check your email and password.')
@@ -58,7 +49,7 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      router.push('/dashboard');
+      // The useEffect hook will handle the redirection
     } catch (error) {
       console.error('Error signing in with Google:', error);
       setError('Failed to sign in with Google. Please try again.');

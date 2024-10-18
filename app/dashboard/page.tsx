@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { User as FirebaseUser, signOut, onAuthStateChanged } from "firebase/auth"
-import { doc, getDoc, setDoc, updateDoc, increment, DocumentData } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc, increment, DocumentData, FieldValue } from "firebase/firestore"
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
@@ -11,7 +11,6 @@ import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCirc
 import { ProgressSlider } from '../../components/ProgressSlider';
 import Link from 'next/link'
 import { Firestore } from "firebase/firestore"
-import { Auth } from "firebase/auth"
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -60,11 +59,6 @@ interface GeneratedQuestion {
   explanation: string;
 }
 
-interface FirebaseContextType {
-  auth: Auth;
-  db: Firestore;
-}
-
 function ProgressCard({ progress }: { progress: UserProgress }) {
   return (
     <Card className="mb-8">
@@ -99,35 +93,33 @@ function ProgressCard({ progress }: { progress: UserProgress }) {
   )
 }
 
-function useUserProgress(userId: string | null) {
-  const [userProgress, setUserProgress] = useState<UserProgress>({
-    latestTestScore: 0,
-    totalQuestionsAnswered: 0,
-    totalTestsCompleted: 0,
-    displayName: '',
-    testID: '',
-    RLogicalReasoning: 0,
-    RAnalyticalReasoning: 0,
-    RReadingComprehension: 0,
-    LogicalReasoningTotal: 0,
-    AnalyticalReasoningTotal: 0,
-    ReadingComprehensionTotal: 0,
-  });
+function useUserProgress(userId: string | null, db: Firestore | null) {
+  const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
 
   const loadUserProgress = useCallback(async (userId: string) => {
-    // Implement your logic to load user progress here
-    // For now, we'll just use a placeholder
+    if (!db) return;
     console.log("Loading user progress for", userId);
-    // setUserProgress(loadedProgress);
-  }, []);
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data() as UserProgress;
+        setUserProgress(data);
+      } else {
+        console.log("No user progress found");
+      }
+    } catch (error) {
+      console.error("Error loading user progress:", error);
+    }
+  }, [db, setUserProgress]); // Add setUserProgress to the dependency array
 
   useEffect(() => {
-    if (userId) {
+    if (userId && db) {
       loadUserProgress(userId);
     }
-  }, [userId, loadUserProgress]);
+  }, [userId, db, loadUserProgress]);
 
-  return { userProgress, loadUserProgress };
+  return { userProgress, setUserProgress, loadUserProgress };
 }
 
 export default function DashboardPage() {
@@ -144,22 +136,11 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const router = useRouter()
-  const { auth, db }: FirebaseContextType = useFirebase()
-  const { userProgress, loadUserProgress } = useUserProgress(user?.uid ?? null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [auth]);
+  const { auth, db } = useFirebase()
+  const { userProgress, setUserProgress, loadUserProgress } = useUserProgress(user?.uid || null, db)
 
   const ensureUserDocument = useCallback(async (userId: string) => {
+    if (!db) return;
     const userDocRef = doc(db, 'users', userId);
     const docSnap = await getDoc(userDocRef);
 
@@ -185,20 +166,25 @@ export default function DashboardPage() {
   }, [db]);
 
   useEffect(() => {
+    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        await ensureUserDocument(user.uid);
-        await loadUserProgress(user.uid);
+        if (db) {
+          await ensureUserDocument(user.uid);
+          await loadUserProgress(user.uid);
+        }
       } else {
         setUser(null);
+        setUserProgress(null);
       }
     });
 
     return () => unsubscribe();
-  }, [auth, ensureUserDocument, loadUserProgress]);
+  }, [auth, db, ensureUserDocument, loadUserProgress]);
 
   const handleSignOut = async () => {
+    if (!auth) return;
     try {
       await signOut(auth)
       router.push('/login')
@@ -330,9 +316,9 @@ export default function DashboardPage() {
   const handleGeneratedAnswer = async (option: string) => {
     setSelectedAnswer(option);
     setShowExplanation(true);
-    if (user && currentGeneratedQuestion && selectedTopic) {
+    if (user && currentGeneratedQuestion && selectedTopic && db) {
       const userDocRef = doc(db, 'users', user.uid);
-      const updateData: any = {
+      const updateData: Record<string, FieldValue | Partial<unknown>> = {
         totalGeneratedQuestionsAnswered: increment(1),
       };
 
@@ -355,7 +341,7 @@ export default function DashboardPage() {
   };
 
   const bookmarkQuestion = async () => {
-    if (user && currentGeneratedQuestion) {
+    if (user && currentGeneratedQuestion && db) {  // Add db to this check
       setIsBookmarked(!isBookmarked);
       const updatedBookmarks = isBookmarked
         ? bookmarkedQuestions.filter(q => q.id !== currentGeneratedQuestion.id)
@@ -374,7 +360,7 @@ export default function DashboardPage() {
 
   const handleTestCompletion = async () => {
     setShowTest(false);
-    if (user) {
+    if (user && db) {
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, {
         latestTestScore: correctAnswers,
@@ -395,8 +381,12 @@ export default function DashboardPage() {
     }
   }, [showExplanation, user, loadUserProgress]);
 
-  if (!user) {
+  if (!auth || !db) {
     return <div>Loading...</div>
+  }
+
+  if (!user || !userProgress) {
+    return <div>Please log in to view this page.</div>
   }
 
   console.log('Selected Topic:', selectedTopic);

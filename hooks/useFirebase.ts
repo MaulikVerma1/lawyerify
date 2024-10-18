@@ -1,80 +1,39 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getAuth, Auth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, Auth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
-import { app, auth as firebaseAuth, googleProvider } from '../firebase/firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
 
-export function useFirebase() {
-  const auth = useMemo(() => firebaseAuth, []) as Auth;
-  const db = useMemo(() => {
-    if (!app) throw new Error("Firebase app not initialized");
-    return getFirestore(app);
-  }, []);
+const firebaseConfig = {
+  apiKey: "AIzaSyBsM3NXVAVsEvusFewssHnXAZPeUG2smz0",
+  authDomain: "test-dca57.firebaseapp.com",
+  projectId: "test-dca57",
+  storageBucket: "test-dca57.appspot.com",
+  messagingSenderId: "86742867263",
+  appId: "1:86742867263:web:431ffc4c1c817ec7db878a",
+  measurementId: "G-HFZY5WLJR3"
+};
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+}
 
-    return () => unsubscribe();
-  }, [auth]);
-
+export const useFirebase = () => {
   const signInWithGoogle = async () => {
-    if (!auth || !googleProvider) {
-      console.error("Auth or Google Provider not initialized");
-      return;
-    }
+    const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      console.log("User signed in with Google:", user);
-      return user;
+      const result = await signInWithPopup(auth, provider);
+      return result.user;
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error('Error signing in with Google:', error);
       throw error;
     }
   };
 
-  const loadUserProgress = async (userId: string) => {
-    if (!auth.currentUser) {
-      console.error("User not authenticated");
-      return;
-    }
-    
-    const userDocRef = doc(db, 'users', userId);
-    const docSnap = await getDoc(userDocRef);
-    
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return {
-        latestTestScore: data.latestTestScore || 0,
-        totalQuestionsAnswered: data.totalQuestionsAnswered || 0,
-        totalTestsCompleted: data.totalTestsCompleted || 0,
-        RLogicalReasoning: data.RLogicalReasoning || 0,
-        RAnalyticalReasoning: data.RAnalyticalReasoning || 0,
-        RReadingComprehension: data.RReadingComprehension || 0,
-        LogicalReasoningTotal: data.LogicalReasoningTotal || 0,
-        AnalyticalReasoningTotal: data.AnalyticalReasoningTotal || 0,
-        ReadingComprehensionTotal: data.ReadingComprehensionTotal || 0,
-      };
-    } else {
-      console.error("No such document!");
-      return null;
-    }
-  }
-
-  const saveUserProgress = async (userId: string, progressData: any) => {
-    if (!auth.currentUser) {
-      console.error("User not authenticated");
-      return;
-    }
-    
-    const userDocRef = doc(db, 'users', userId)
-    // Implement the actual saving logic here
-  }
-
-  return { app, auth, db, signInWithGoogle, loadUserProgress, saveUserProgress, isAuthenticated };
-}
+  return { auth, db, signInWithGoogle };
+};

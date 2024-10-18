@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "../../components/ui/card"
@@ -22,20 +22,18 @@ export default function SignUpPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { auth } = useFirebase()
+  const { auth, signInWithGoogle } = useFirebase()
 
   useEffect(() => {
-    console.log('Auth object:', auth) // Add this line
-    if (auth) {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        console.log('Auth state changed, user:', user) // Add this line
-        if (user) {
-          router.push('/dashboard')
-        }
-      })
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log('Signup page: Auth state changed, user:', user)
+      if (user) {
+        console.log('Signup page: User is authenticated, redirecting to dashboard')
+        router.push('/dashboard')
+      }
+    })
 
-      return () => unsubscribe()
-    }
+    return () => unsubscribe()
   }, [auth, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,22 +54,20 @@ export default function SignUpPage() {
     if (!auth) return
 
     try {
-      console.log('Before Firebase auth call') // Add this line
+      console.log('Before Firebase auth call')
       await createUserWithEmailAndPassword(auth, email, password)
-      console.log('After Firebase auth call, user signed up/logged in successfully') // Add this line
-      router.push('/dashboard')
+      console.log('After Firebase auth call, user signed up successfully')
+      // The useEffect hook will handle the redirection
     } catch (error) {
-      console.error('Error signing up/logging in:', error)
+      console.error('Error signing up:', error)
       setError(error instanceof Error ? error.message : 'An unknown error occurred')
     }
   }
 
   const handleGoogleSignIn = async () => {
-    if (!auth) return;
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
+      await signInWithGoogle();
+      // The useEffect hook will handle the redirection
     } catch (error) {
       console.error('Error signing in with Google:', error);
       setError('Failed to sign in with Google. Please try again.');
