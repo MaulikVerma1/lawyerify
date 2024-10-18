@@ -14,3 +14,7 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

@@ -11,6 +11,7 @@ import { Label } from "../../components/ui/label"
 import { Checkbox } from "../../components/ui/checkbox"
 import { Gavel } from 'lucide-react'
 import { useFirebase } from '@/hooks/useFirebase'
+import Image from 'next/image'
 
 
 
@@ -60,8 +61,8 @@ export default function SignUpPage() {
       console.log('After Firebase auth call, user signed up/logged in successfully') // Add this line
       router.push('/dashboard')
     } catch (error) {
-      console.error('Error signing up/logging in:', error) // Modify this line
-      setError(error.message)
+      console.error('Error signing up/logging in:', error)
+      setError(error instanceof Error ? error.message : 'An unknown error occurred')
     }
   }
 
@@ -165,7 +166,13 @@ export default function SignUpPage() {
                 onClick={handleGoogleSignIn} 
                 className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 font-semibold py-2 rounded-md transition duration-200 flex items-center justify-center"
               >
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" className="w-5 h-5 mr-2" />
+                <Image
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt="Google logo"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
                 Sign up with Google
               </Button>
             </div>

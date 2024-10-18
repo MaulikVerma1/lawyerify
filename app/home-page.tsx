@@ -1,8 +1,14 @@
+"use client";
+
 import Link from 'next/link'
+import Image from 'next/image' // Re-add this import
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { BarChart, BookOpen, CheckCircle, Gavel, Layers, Users } from 'lucide-react'
+import { BarChart, BookOpen, CheckCircle, Gavel, Layers, Users, Menu } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useFirebase } from '../hooks/useFirebase'
+import { motion } from 'framer-motion';
 
 export default function HomePage() {
   return (
@@ -13,14 +19,18 @@ export default function HomePage() {
             <Gavel className="mr-2" />
             Lawerify
           </Link>
-          <nav>
-            <ul className="flex space-x-6">
-              <li><Link href="/" className="hover:text-yellow-200 transition-colors">Home</Link></li>
-              <li><Link href="#features" className="hover:text-yellow-200 transition-colors">Features</Link></li>
-              <li><Link href="#pricing" className="hover:text-yellow-200 transition-colors">Pricing</Link></li>
-              <li><Link href="/signup" className="hover:text-yellow-200 transition-colors">Sign Up</Link></li>
-            </ul>
+          <nav className="hidden md:flex items-center space-x-1">
+            <NavItem href="/">Home</NavItem>
+            <NavItem href="#features">Features</NavItem>
+            <NavItem href="#pricing">Pricing</NavItem>
+            <NavItem href="/login">Sign In</NavItem>
+            <Button asChild size="sm" className="ml-4 bg-yellow-400 text-black hover:bg-yellow-300">
+              <Link href="/signup">Sign Up</Link>
+            </Button>
           </nav>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-6 w-6" />
+          </Button>
         </div>
       </header>
 
@@ -44,24 +54,31 @@ export default function HomePage() {
                   </Button>
                 </div>
               </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full filter blur-3xl opacity-30"></div>
-                <Card className="relative bg-white/80 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle>Quick Practice</CardTitle>
-                    <CardDescription>Test your skills with a sample question</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="mb-4">Which of the following most weakens the argument above?</p>
-                    <div className="space-y-2">
-                      {['A', 'B', 'C', 'D', 'E'].map((option) => (
-                        <Button key={option} variant="outline" className="w-full justify-start">
-                          {option}. Sample answer option
-                        </Button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="relative flex flex-col items-center justify-center h-[300px]">
+                <motion.div
+                  initial={{ rotate: -45, y: -50 }}
+                  animate={{ rotate: 0, y: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    duration: 0.5,
+                  }}
+                  className="w-64 h-64 relative"
+                >
+                  <Gavel className="w-full h-full text-yellow-500" />
+                </motion.div>
+                <div className="w-full h-2 bg-yellow-500 mt-4" />
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.8] }}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.5,
+                  }}
+                  className="absolute bottom-16 left-1/2 w-16 h-16 bg-yellow-200 rounded-full -translate-x-1/2"
+                  style={{ boxShadow: "0 0 20px 10px rgba(250, 204, 21, 0.4)" }}
+                />
               </div>
             </div>
           </div>
@@ -156,7 +173,47 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* New Dashboard Feature Section */}
         <section className="py-20 bg-yellow-50">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold text-black mb-6">Track Your Progress</h2>
+                <p className="text-xl text-gray-700 mb-8">
+                  Sleek and modern dashboard to help you track your progress!
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2 text-yellow-500" />
+                    <span>Visualize your performance across all LSAT sections</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2 text-yellow-500" />
+                    <span>Monitor your improvement over time</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2 text-yellow-500" />
+                    <span>Identify strengths and areas for improvement</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-3xl filter blur-xl opacity-30 -rotate-6"></div>
+                <div className="relative rounded-3xl overflow-hidden shadow-xl">
+                  <Image 
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-DjJORlAk8irvVpaMP9FjFrICpRrrlT.png"
+                    alt="Lawerify Dashboard" 
+                    width={500}
+                    height={300}
+                    layout="responsive"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center text-black mb-12">Join Thousands of Successful LSAT Takers</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -253,7 +310,13 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-yellow-900 text-center">
+<<<<<<< Updated upstream
             <p>&amp;copy; 2024 Lawerify. All rights reserved.</p>
+=======
+            <p>
+              &copy; 2024 Lawerify. All rights reserved.
+            </p>
+>>>>>>> Stashed changes
           </div>
         </div>
       </footer>
@@ -277,7 +340,7 @@ function TestimonialCard({ quote, author }: { quote: string; author: string }) {
   return (
     <Card>
       <CardContent className="pt-6">
-        <blockquote className="text-lg italic mb-4">"{quote}"</blockquote>
+        <blockquote className="text-lg italic mb-4">&ldquo;{quote}&rdquo;</blockquote>
         <p className="font-semibold text-right">- {author}</p>
       </CardContent>
     </Card>
@@ -285,6 +348,22 @@ function TestimonialCard({ quote, author }: { quote: string; author: string }) {
 }
 
 function PricingCard({ title, price, features, highlighted = false }: { title: string; price: string; features: string[]; highlighted?: boolean }) {
+<<<<<<< Updated upstream
+=======
+  const router = useRouter()
+  const { auth } = useFirebase()
+
+  const handleChoosePlan = () => {
+    const plan = { title, price, features }
+    localStorage.setItem('selectedPlan', JSON.stringify(plan))
+    if (auth?.currentUser) {
+      router.push('/payment')
+    } else { 
+      router.push('/signup')
+    }
+  }
+
+>>>>>>> Stashed changes
   return (
     <div className={`p-8 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105 ${
       highlighted ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-black' : 'bg-white text-black'
@@ -299,13 +378,30 @@ function PricingCard({ title, price, features, highlighted = false }: { title: s
           </li>
         ))}
       </ul>
-      <Button asChild className={`w-full py-3 text-lg font-semibold transition-colors ${
-        highlighted 
-          ? 'bg-black text-yellow-400 hover:bg-yellow-600 hover:text-black' 
-          : 'bg-yellow-400 text-black hover:bg-yellow-500'
-      }`}>
-        <Link href="/signup">Choose Plan</Link>
+      <Button 
+        onClick={handleChoosePlan}
+        className={`w-full py-3 text-lg font-semibold transition-colors ${
+          highlighted 
+            ? 'bg-black text-yellow-400 hover:bg-yellow-600 hover:text-black' 
+            : 'bg-yellow-400 text-black hover:bg-yellow-500'
+        }`}
+      >
+        Choose Plan
       </Button>
     </div>
   )
 }
+<<<<<<< Updated upstream
+=======
+
+function NavItem({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link 
+      href={href} 
+      className="px-3 py-2 text-sm font-medium rounded-md hover:bg-yellow-400 hover:text-black transition-colors"
+    >
+      {children}
+    </Link>
+  )
+}
+>>>>>>> Stashed changes

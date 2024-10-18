@@ -3,11 +3,14 @@ import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { app, auth as firebaseAuth, googleProvider } from '../firebase/firebaseConfig';
-import { doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 export function useFirebase() {
-  const auth = useMemo(() => firebaseAuth, [])
-  const db = useMemo(() => getFirestore(app), [])
+  const auth = useMemo(() => firebaseAuth, []) as Auth;
+  const db = useMemo(() => {
+    if (!app) throw new Error("Firebase app not initialized");
+    return getFirestore(app);
+  }, []);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -41,8 +44,26 @@ export function useFirebase() {
       return;
     }
     
-    const userDocRef = doc(db, 'users', userId)
-    // Implement the actual loading logic here
+    const userDocRef = doc(db, 'users', userId);
+    const docSnap = await getDoc(userDocRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        latestTestScore: data.latestTestScore || 0,
+        totalQuestionsAnswered: data.totalQuestionsAnswered || 0,
+        totalTestsCompleted: data.totalTestsCompleted || 0,
+        RLogicalReasoning: data.RLogicalReasoning || 0,
+        RAnalyticalReasoning: data.RAnalyticalReasoning || 0,
+        RReadingComprehension: data.RReadingComprehension || 0,
+        LogicalReasoningTotal: data.LogicalReasoningTotal || 0,
+        AnalyticalReasoningTotal: data.AnalyticalReasoningTotal || 0,
+        ReadingComprehensionTotal: data.ReadingComprehensionTotal || 0,
+      };
+    } else {
+      console.error("No such document!");
+      return null;
+    }
   }
 
   const saveUserProgress = async (userId: string, progressData: any) => {

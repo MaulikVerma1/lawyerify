@@ -34,9 +34,13 @@ Explanation: [Your detailed explanation here]`;
 
       console.log("API Generated content:", text);
       res.status(200).json({ result: text });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("API Error:", error);
-      res.status(500).json({ error: 'Error generating question', details: error.message, stack: error.stack });
+      if (error instanceof Error) {
+        res.status(500).json({ error: 'Error generating question', details: error.message, stack: error.stack });
+      } else {
+        res.status(500).json({ error: 'Error generating question', details: 'An unknown error occurred' });
+      }
     }
   } else {
     res.setHeader('Allow', ['POST']);

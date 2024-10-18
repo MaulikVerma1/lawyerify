@@ -2,27 +2,32 @@ import React from 'react';
 
 interface ProgressSliderProps {
   label: string;
-  value: number;
-  max: number;
+  correct: number;
+  total: number;
 }
 
-export function ProgressSlider({ label, value, max }: ProgressSliderProps) {
-  const percentage = max > 0 ? Math.round((value / max) * 100) : 0;
-  const colorClass = percentage >= 70 ? 'bg-green-600' : 'bg-red-600';
-
-  console.log(`ProgressSlider - ${label}: value=${value}, max=${max}, percentage=${percentage}`);
+export function ProgressSlider({ label, correct, total }: ProgressSliderProps) {
+  const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const correctPercentage = total > 0 ? (correct / total) * 100 : 0;
+  const incorrectPercentage = total > 0 ? ((total - correct) / total) * 100 : 0;
 
   return (
     <div className="mb-4">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between mb-1">
         <span className="text-sm font-medium">{label}</span>
-        <span className="text-sm font-medium">{value}/{max} ({percentage}%)</span>
+        <span className="text-sm font-medium">{correct}/{total} ({percentage}%)</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-        <div 
-          className={`h-2.5 rounded-full ${colorClass}`} 
-          style={{ width: `${percentage}%` }}
-        ></div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+        <div className="flex h-full">
+          <div 
+            className="bg-green-600 h-full"
+            style={{ width: `${correctPercentage}%` }}
+          ></div>
+          <div 
+            className="bg-red-600 h-full"
+            style={{ width: `${incorrectPercentage}%` }}
+          ></div>
+        </div>
       </div>
     </div>
   );

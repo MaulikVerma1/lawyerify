@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { onAuthStateChanged, User, signOut } from "firebase/auth"
-import { doc, getDoc, setDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore"
+import { User as FirebaseUser, signOut } from "firebase/auth"
+import { doc, getDoc, setDoc, updateDoc, increment, DocumentData } from "firebase/firestore"
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, Maximize2 } from 'lucide-react'
+import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, CreditCard } from 'lucide-react'
 import { ProgressSlider } from '../../components/ProgressSlider';
+import Link from 'next/link'
+import { Firestore } from "firebase/firestore"
+import { Auth } from "firebase/auth"
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -35,40 +38,34 @@ const mockQuestions = [
 
 const lsatTopics = ["Logical Reasoning", "Analytical Reasoning", "Reading Comprehension"];
 
-const mockGeneratedQuestions = {
-  "Logical Reasoning": [
-    {
-      id: "LR1",
-      question: "Which of the following most accurately expresses the main conclusion of the argument?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option B",
-      explanation: "This is the explanation for the correct answer."
-    },
-    // Add more questions...
-  ],
-  "Analytical Reasoning": [
-    {
-      id: "AR1",
-      question: "If X is true, which of the following must also be true?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option C",
-      explanation: "This is the explanation for the correct answer."
-    },
-    // Add more questions...
-  ],
-  "Reading Comprehension": [
-    {
-      id: "RC1",
-      question: "According to the passage, which of the following is true?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option A",
-      explanation: "This is the explanation for the correct answer."
-    },
-    // Add more questions...
-  ]
-};
+interface UserProgress extends DocumentData {
+  latestTestScore: number;
+  totalQuestionsAnswered: number;
+  totalTestsCompleted: number;
+  displayName: string;
+  testID: string;
+  RLogicalReasoning: number;
+  RAnalyticalReasoning: number;
+  RReadingComprehension: number;
+  LogicalReasoningTotal: number;
+  AnalyticalReasoningTotal: number;
+  ReadingComprehensionTotal: number;
+}
 
-function ProgressCard({ progress }) {
+interface GeneratedQuestion {
+  id?: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+interface FirebaseContextType {
+  auth: Auth;
+  db: Firestore;
+}
+
+function ProgressCard({ progress }: { progress: UserProgress }) {
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -120,12 +117,13 @@ function useUserProgress(userId: string | null) {
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<FirebaseUser | null>(null)
   const [showTest, setShowTest] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [showExplanation, setShowExplanation] = useState(false)
   const [correctAnswers, setCorrectAnswers] = useState(0)
+<<<<<<< Updated upstream
   const [testCompleted, setTestCompleted] = useState(false)
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState([])
   const [testInProgress, setTestInProgress] = useState(false)
@@ -133,10 +131,31 @@ export default function DashboardPage() {
   const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+=======
+  const [userProgress, setUserProgress] = useState<UserProgress>({
+    latestTestScore: 0,
+    totalQuestionsAnswered: 0,
+    totalTestsCompleted: 0,
+    displayName: '',
+    testID: '',
+    RLogicalReasoning: 0,
+    RAnalyticalReasoning: 0,
+    RReadingComprehension: 0,
+    LogicalReasoningTotal: 0,
+    AnalyticalReasoningTotal: 0,
+    ReadingComprehensionTotal: 0,
+  })
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<GeneratedQuestion[]>([])
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null)
+  const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState<GeneratedQuestion | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+>>>>>>> Stashed changes
   const [isBookmarked, setIsBookmarked] = useState(false)
   const router = useRouter()
-  const { auth, db, isAuthenticated } = useFirebase()
+  const { auth, db }: FirebaseContextType = useFirebase()
 
+<<<<<<< Updated upstream
   const userProgress = useUserProgress(user?.uid);
 
   useEffect(() => {
@@ -150,32 +169,70 @@ export default function DashboardPage() {
 
     return () => unsubscribe();
   }, [auth, router, db]);
+=======
+  const ensureUserDocument = useCallback(async (userId: string) => {
+    const userDocRef = doc(db, 'users', userId);
+    const docSnap = await getDoc(userDocRef);
 
-  const saveUserProgress = async () => {
-    if (user) {
-      const userDocRef = doc(db, 'users', user.uid)
-      const testResultsCollectionRef = collection(userDocRef, 'testResults')
-
-      // Update user document
-      await updateDoc(userDocRef, {
-        latestTestScore: correctAnswers,
-        totalTestsCompleted: increment(1),
-        totalQuestionsAnswered: increment(mockQuestions.length),
-        testID: "LSAT Practice Test 1"
-      })
-
-      // Add new test result
-      await addDoc(testResultsCollectionRef, {
-        score: correctAnswers,
-        totalQuestions: mockQuestions.length,
-        testID: "LSAT Practice Test 1",
-        timestamp: new Date()
-      })
-
-      // Reload user progress to update UI
-      await loadUserProgress(user.uid)
+    if (!docSnap.exists()) {
+      // Create a new user document with default values
+      await setDoc(userDocRef, {
+        displayName: '',
+        latestTestScore: 0,
+        totalQuestionsAnswered: 0,
+        totalTestsCompleted: 0,
+        testID: '',
+        RLogicalReasoning: 0,
+        RAnalyticalReasoning: 0,
+        RReadingComprehension: 0,
+        LogicalReasoningTotal: 0,
+        AnalyticalReasoningTotal: 0,
+        ReadingComprehensionTotal: 0,
+        totalGeneratedQuestionsAnswered: 0,
+        bookmarkedQuestions: [],
+      });
+      console.log("Created new user document");
     }
-  }
+  }, [db]);
+
+  const loadUserProgress = useCallback(async (userId: string) => {
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      setUserProgress({
+        latestTestScore: data.latestTestScore || 0,
+        totalQuestionsAnswered: data.totalQuestionsAnswered || 0,
+        totalTestsCompleted: data.totalTestsCompleted || 0,
+        displayName: data.displayName || '',
+        testID: data.testID || '',
+        RLogicalReasoning: data.RLogicalReasoning || 0,
+        RAnalyticalReasoning: data.RAnalyticalReasoning || 0,
+        RReadingComprehension: data.RReadingComprehension || 0,
+        LogicalReasoningTotal: data.LogicalReasoningTotal || 0,
+        AnalyticalReasoningTotal: data.AnalyticalReasoningTotal || 0,
+        ReadingComprehensionTotal: data.ReadingComprehensionTotal || 0,
+      });
+      setBookmarkedQuestions(data.bookmarkedQuestions || []);
+    } else {
+      console.error("User document does not exist");
+    }
+  }, [db]);
+>>>>>>> Stashed changes
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user: FirebaseUser | null) => {
+      if (user) {
+        setUser(user);
+        await ensureUserDocument(user.uid);
+        await loadUserProgress(user.uid);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, router, db, ensureUserDocument, loadUserProgress]);
 
   const handleSignOut = async () => {
     try {
@@ -187,13 +244,11 @@ export default function DashboardPage() {
   }
 
   const startTest = () => {
-    setTestInProgress(true);
     setShowTest(true);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
     setShowExplanation(false);
     setCorrectAnswers(0);
-    setTestCompleted(false);
   }
 
   const handleAnswer = (selected: string) => {
@@ -214,7 +269,7 @@ export default function DashboardPage() {
     }
   }
 
-  const handleTopicSelect = async (topic) => {
+  const handleTopicSelect = async (topic: string) => {
     console.log("Topic selected:", topic);
     setSelectedTopic(topic);
     setIsBookmarked(false);
@@ -229,7 +284,7 @@ export default function DashboardPage() {
     await generateNewQuestion(topic);
   };
 
-  const generateNewQuestion = async (topic: string) => {
+  const generateNewQuestion = async (topic: string, retries = 3) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -262,22 +317,26 @@ export default function DashboardPage() {
         setShowExplanation(false);
         setIsBookmarked(false);
       } else {
-        throw new Error('Failed to parse question data');
+        if (retries > 0) {
+          console.log(`Retrying question generation. Attempts left: ${retries - 1}`);
+          return generateNewQuestion(topic, retries - 1);
+        } else {
+          throw new Error('Failed to parse question data after multiple attempts');
+        }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error generating question:', error);
-      setError(`Failed to generate question: ${error.message}`);
+      setError(`Failed to generate question: ${error instanceof Error ? error.message : String(error)}`);
       setCurrentGeneratedQuestion(null);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const parseQuestionData = (text: string) => {
+  const parseQuestionData = (text: string): GeneratedQuestion | null => {
     console.log("Raw API response:", text);
 
     try {
-      // More flexible regex patterns
       const questionMatch = text.match(/Question:?\s*([\s\S]*?)(?=\n\s*[A-D]\)|\n\s*Correct Answer:)/i);
       const optionsMatch = text.match(/([A-D])\)\s*([\s\S]*?)(?=\n\s*[A-D]\)|\n\s*Correct Answer:|\s*$)/gi);
       const correctAnswerMatch = text.match(/Correct Answer:?\s*([A-D])/i);
@@ -307,6 +366,7 @@ export default function DashboardPage() {
   const handleGeneratedAnswer = async (option: string) => {
     setSelectedAnswer(option);
     setShowExplanation(true);
+<<<<<<< Updated upstream
     if (user && currentGeneratedQuestion) {
       const userDocRef = doc(db, 'users', user.uid);
       const updateData: any = {
@@ -320,10 +380,30 @@ export default function DashboardPage() {
       if (isCorrect) {
         updateData[`R${topicField}`] = increment(1);
       }
+=======
+    if (user && currentGeneratedQuestion && selectedTopic) {
+      const topicField = selectedTopic.replace(/\s+/g, '');
+      const isCorrect = option === currentGeneratedQuestion.correctAnswer;
+>>>>>>> Stashed changes
 
       try {
+        const userDocRef = doc(db, 'users', user.uid);
+        
+        const updateData: {
+          totalGeneratedQuestionsAnswered: ReturnType<typeof increment>;
+          [key: string]: ReturnType<typeof increment> | number;
+        } = {
+          totalGeneratedQuestionsAnswered: increment(1),
+          [`${topicField}Total`]: increment(1),
+        };
+        
+        if (isCorrect) {
+          updateData[`R${topicField}`] = increment(1);
+        }
+
         await updateDoc(userDocRef, updateData);
         
+<<<<<<< Updated upstream
         // Update local state immediately for a responsive UI
         setUserProgress(prevProgress => ({
           ...prevProgress,
@@ -333,6 +413,14 @@ export default function DashboardPage() {
 
         // Optionally, you can still call loadUserProgress to ensure all data is in sync
         // await loadUserProgress(user.uid);
+=======
+        setUserProgress(prevProgress => ({
+          ...prevProgress,
+          [`${topicField}Total`]: (prevProgress[`${topicField}Total` as keyof UserProgress] as number || 0) + 1,
+          [`R${topicField}`]: isCorrect ? ((prevProgress[`R${topicField}` as keyof UserProgress] as number || 0) + 1) : (prevProgress[`R${topicField}` as keyof UserProgress] as number || 0),
+        }));
+
+>>>>>>> Stashed changes
       } catch (error) {
         console.error("Error updating user progress:", error);
       }
@@ -358,9 +446,7 @@ export default function DashboardPage() {
   };
 
   const handleTestCompletion = async () => {
-    setTestInProgress(false);
     setShowTest(false);
-    setTestCompleted(true);
     if (user) {
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, {
@@ -375,6 +461,12 @@ export default function DashboardPage() {
   useEffect(() => {
     console.log('currentGeneratedQuestion updated:', currentGeneratedQuestion);
   }, [currentGeneratedQuestion]);
+
+  useEffect(() => {
+    if (user && showExplanation) {
+      loadUserProgress(user.uid);
+    }
+  }, [showExplanation, user, loadUserProgress]);
 
   if (!user) {
     return <div>Loading...</div>
@@ -391,7 +483,14 @@ export default function DashboardPage() {
             <Gavel className="h-8 w-8 mr-2 text-yellow-600" />
             <h1 className="text-3xl font-bold text-gray-900">Lawerify Dashboard</h1>
           </div>
-          <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
+          <div className="flex items-center space-x-4">
+            <Link href="/upgrade">
+              <Button variant="outline">
+                <CreditCard className="mr-2 h-4 w-4" /> Upgrade
+              </Button>
+            </Link>
+            <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
+          </div>
         </div>
         
         {showTest ? (
@@ -453,18 +552,18 @@ export default function DashboardPage() {
               <CardContent>
                 <ProgressSlider 
                   label="Logical Reasoning" 
-                  value={userProgress.RLogicalReasoning} 
-                  max={userProgress.LogicalReasoningTotal} 
+                  correct={userProgress.RLogicalReasoning} 
+                  total={userProgress.LogicalReasoningTotal} 
                 />
                 <ProgressSlider 
                   label="Analytical Reasoning" 
-                  value={userProgress.RAnalyticalReasoning} 
-                  max={userProgress.AnalyticalReasoningTotal} 
+                  correct={userProgress.RAnalyticalReasoning} 
+                  total={userProgress.AnalyticalReasoningTotal} 
                 />
                 <ProgressSlider 
                   label="Reading Comprehension" 
-                  value={userProgress.RReadingComprehension} 
-                  max={userProgress.ReadingComprehensionTotal} 
+                  correct={userProgress.RReadingComprehension} 
+                  total={userProgress.ReadingComprehensionTotal} 
                 />
               </CardContent>
             </Card>
@@ -478,11 +577,11 @@ export default function DashboardPage() {
                 <CardContent>
                   {userProgress.totalTestsCompleted > 0 ? (
                     <>
-                      <p>Latest Score: {userProgress.latestTestScore} / 3</p>
-                      <p>Percentage: {((userProgress.latestTestScore / 3) * 100).toFixed(2)}%</p>
+                      <p>Latest Score: {userProgress.latestTestScore} / {mockQuestions.length}</p>
+                      <p>Percentage: {((userProgress.latestTestScore / mockQuestions.length) * 100).toFixed(2)}%</p>
                     </>
                   ) : (
-                    <p>You haven't taken this test yet.</p>
+                    <p>You haven&apos;t taken this test yet.</p>
                   )}
                   <Button onClick={startTest} className="mt-4">
                     {userProgress.totalTestsCompleted > 0 ? 'Retake Test' : 'Start Test'}
@@ -534,43 +633,42 @@ export default function DashboardPage() {
                     </div>
                   ) : currentGeneratedQuestion ? (
                     <div>
-                      <p className="mb-4 font-bold text-lg">{currentGeneratedQuestion.question}</p>
-                      {currentGeneratedQuestion.options && currentGeneratedQuestion.options.map((option, index) => (
-                        <Button
-                          key={index}
-                          onClick={() => handleGeneratedAnswer(option)}
-                          className={`w-full text-left justify-start text-lg mb-2 ${
-                            selectedAnswer === option ? 'bg-gray-200' : ''
-                          }`}
-                          variant="outline"
-                          disabled={showExplanation}
-                        >
-                          {String.fromCharCode(65 + index)}) {option}
-                          {showExplanation && String.fromCharCode(65 + index) === currentGeneratedQuestion.correctAnswer && (
-                            <CheckCircle className="ml-2 text-green-500" />
-                          )}
-                          {showExplanation && selectedAnswer === option && String.fromCharCode(65 + index) !== currentGeneratedQuestion.correctAnswer && (
-                            <X className="ml-2 text-red-500" />
-                          )}
-                        </Button>
-                      ))}
+                      <p className="mb-4">{currentGeneratedQuestion.question}</p>
+                      <div className="space-y-2">
+                        {currentGeneratedQuestion.options.map((option, index) => (
+                          <Button
+                            key={index}
+                            onClick={() => handleGeneratedAnswer(`${String.fromCharCode(65 + index)}`)}
+                            className={`w-full text-left justify-start ${
+                              selectedAnswer === `${String.fromCharCode(65 + index)}` ? 'bg-gray-200' : ''
+                            }`}
+                            variant="outline"
+                            disabled={showExplanation}
+                          >
+                            {`${String.fromCharCode(65 + index)}) ${option}`}
+                            {showExplanation && `${String.fromCharCode(65 + index)}` === currentGeneratedQuestion.correctAnswer && (
+                              <CheckCircle className="ml-2 text-green-500" />
+                            )}
+                            {showExplanation && selectedAnswer === `${String.fromCharCode(65 + index)}` && `${String.fromCharCode(65 + index)}` !== currentGeneratedQuestion.correctAnswer && (
+                              <X className="ml-2 text-red-500" />
+                            )}
+                          </Button>
+                        ))}
+                      </div>
                       {showExplanation && (
                         <div className="mt-4">
-                          <p className="font-bold">Correct Answer: {currentGeneratedQuestion.correctAnswer}</p>
+                          <p>Correct Answer: {currentGeneratedQuestion.correctAnswer}</p>
                           <p>{currentGeneratedQuestion.explanation}</p>
+                          <Button onClick={() => generateNewQuestion(selectedTopic)} className="mt-4">Next Question</Button>
+                          <Button 
+                            onClick={bookmarkQuestion} 
+                            variant="outline"
+                            className={`mt-4 ${isBookmarked ? 'bg-yellow-100 text-yellow-600' : ''}`}
+                          >
+                            <Bookmark className={`mr-2 h-4 w-4 ${isBookmarked ? 'fill-yellow-600' : ''}`} /> {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                          </Button>
                         </div>
                       )}
-                      <div className="mt-4 flex justify-between">
-                        <Button onClick={() => generateNewQuestion(selectedTopic)}>Next Question</Button>
-                        <Button 
-                          onClick={bookmarkQuestion} 
-                          variant="outline"
-                          className={`flex items-center ${isBookmarked ? 'bg-yellow-100 text-yellow-600' : ''}`}
-                        >
-                          <Bookmark className={`mr-2 h-5 w-5 ${isBookmarked ? 'fill-yellow-600' : ''}`} />
-                          {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                        </Button>
-                      </div>
                     </div>
                   ) : (
                     <Button onClick={() => generateNewQuestion(selectedTopic)}>Generate Question</Button>
