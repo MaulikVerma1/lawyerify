@@ -8,7 +8,7 @@ import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 
-// Add this interface near the top of the file, after the imports
+// Interface definition
 interface BookmarkedQuestion {
   id: string;
   question: string;
@@ -44,20 +44,7 @@ export default function BookmarksPage() {
 
       return () => unsubscribe()
     }
-<<<<<<< Updated upstream
-  }, [auth, router, db])
-
-  const loadBookmarkedQuestions = async (userId: string) => {
-    const userDocRef = doc(db, 'users', userId)
-    const userDoc = await getDoc(userDocRef)
-    if (userDoc.exists()) {
-      const data = userDoc.data()
-      setBookmarkedQuestions(data.bookmarkedQuestions || [])
-    }
-  }
-=======
   }, [auth, router, loadBookmarkedQuestions])
->>>>>>> Stashed changes
 
   if (!user) {
     return <div>Loading...</div>

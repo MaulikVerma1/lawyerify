@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User as FirebaseUser, signOut } from "firebase/auth"
+import { User as FirebaseUser, signOut, onAuthStateChanged } from "firebase/auth"
 import { doc, getDoc, setDoc, updateDoc, increment, DocumentData } from "firebase/firestore"
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
@@ -100,38 +100,6 @@ function ProgressCard({ progress }: { progress: UserProgress }) {
 }
 
 function useUserProgress(userId: string | null) {
-  const [userProgress, setUserProgress] = useState(/* initial state */);
-
-  useEffect(() => {
-    if (userId) {
-      const loadUserProgress = async () => {
-        // Your existing loadUserProgress logic here
-        // ...
-        setUserProgress(loadedProgress);
-      };
-      loadUserProgress();
-    }
-  }, [userId]);
-
-  return userProgress;
-}
-
-export default function DashboardPage() {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [showTest, setShowTest] = useState(false)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
-  const [showExplanation, setShowExplanation] = useState(false)
-  const [correctAnswers, setCorrectAnswers] = useState(0)
-<<<<<<< Updated upstream
-  const [testCompleted, setTestCompleted] = useState(false)
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState([])
-  const [testInProgress, setTestInProgress] = useState(false)
-  const [selectedTopic, setSelectedTopic] = useState(null)
-  const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
-=======
   const [userProgress, setUserProgress] = useState<UserProgress>({
     latestTestScore: 0,
     totalQuestionsAnswered: 0,
@@ -144,19 +112,40 @@ export default function DashboardPage() {
     LogicalReasoningTotal: 0,
     AnalyticalReasoningTotal: 0,
     ReadingComprehensionTotal: 0,
-  })
+  });
+
+  const loadUserProgress = useCallback(async (userId: string) => {
+    // Implement your logic to load user progress here
+    // For now, we'll just use a placeholder
+    console.log("Loading user progress for", userId);
+    // setUserProgress(loadedProgress);
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      loadUserProgress(userId);
+    }
+  }, [userId, loadUserProgress]);
+
+  return { userProgress, loadUserProgress };
+}
+
+export default function DashboardPage() {
+  const [user, setUser] = useState<FirebaseUser | null>(null)
+  const [showTest, setShowTest] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [showExplanation, setShowExplanation] = useState(false)
+  const [correctAnswers, setCorrectAnswers] = useState(0)
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<GeneratedQuestion[]>([])
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null)
   const [currentGeneratedQuestion, setCurrentGeneratedQuestion] = useState<GeneratedQuestion | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
->>>>>>> Stashed changes
   const [isBookmarked, setIsBookmarked] = useState(false)
   const router = useRouter()
   const { auth, db }: FirebaseContextType = useFirebase()
-
-<<<<<<< Updated upstream
-  const userProgress = useUserProgress(user?.uid);
+  const { userProgress, loadUserProgress } = useUserProgress(user?.uid ?? null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -168,8 +157,8 @@ export default function DashboardPage() {
     });
 
     return () => unsubscribe();
-  }, [auth, router, db]);
-=======
+  }, [auth]);
+
   const ensureUserDocument = useCallback(async (userId: string) => {
     const userDocRef = doc(db, 'users', userId);
     const docSnap = await getDoc(userDocRef);
@@ -195,33 +184,8 @@ export default function DashboardPage() {
     }
   }, [db]);
 
-  const loadUserProgress = useCallback(async (userId: string) => {
-    const userDocRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      const data = userDoc.data();
-      setUserProgress({
-        latestTestScore: data.latestTestScore || 0,
-        totalQuestionsAnswered: data.totalQuestionsAnswered || 0,
-        totalTestsCompleted: data.totalTestsCompleted || 0,
-        displayName: data.displayName || '',
-        testID: data.testID || '',
-        RLogicalReasoning: data.RLogicalReasoning || 0,
-        RAnalyticalReasoning: data.RAnalyticalReasoning || 0,
-        RReadingComprehension: data.RReadingComprehension || 0,
-        LogicalReasoningTotal: data.LogicalReasoningTotal || 0,
-        AnalyticalReasoningTotal: data.AnalyticalReasoningTotal || 0,
-        ReadingComprehensionTotal: data.ReadingComprehensionTotal || 0,
-      });
-      setBookmarkedQuestions(data.bookmarkedQuestions || []);
-    } else {
-      console.error("User document does not exist");
-    }
-  }, [db]);
->>>>>>> Stashed changes
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
         await ensureUserDocument(user.uid);
@@ -232,7 +196,7 @@ export default function DashboardPage() {
     });
 
     return () => unsubscribe();
-  }, [auth, router, db, ensureUserDocument, loadUserProgress]);
+  }, [auth, ensureUserDocument, loadUserProgress]);
 
   const handleSignOut = async () => {
     try {
@@ -324,7 +288,7 @@ export default function DashboardPage() {
           throw new Error('Failed to parse question data after multiple attempts');
         }
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error generating question:', error);
       setError(`Failed to generate question: ${error instanceof Error ? error.message : String(error)}`);
       setCurrentGeneratedQuestion(null);
@@ -366,8 +330,7 @@ export default function DashboardPage() {
   const handleGeneratedAnswer = async (option: string) => {
     setSelectedAnswer(option);
     setShowExplanation(true);
-<<<<<<< Updated upstream
-    if (user && currentGeneratedQuestion) {
+    if (user && currentGeneratedQuestion && selectedTopic) {
       const userDocRef = doc(db, 'users', user.uid);
       const updateData: any = {
         totalGeneratedQuestionsAnswered: increment(1),
@@ -380,47 +343,11 @@ export default function DashboardPage() {
       if (isCorrect) {
         updateData[`R${topicField}`] = increment(1);
       }
-=======
-    if (user && currentGeneratedQuestion && selectedTopic) {
-      const topicField = selectedTopic.replace(/\s+/g, '');
-      const isCorrect = option === currentGeneratedQuestion.correctAnswer;
->>>>>>> Stashed changes
 
       try {
-        const userDocRef = doc(db, 'users', user.uid);
-        
-        const updateData: {
-          totalGeneratedQuestionsAnswered: ReturnType<typeof increment>;
-          [key: string]: ReturnType<typeof increment> | number;
-        } = {
-          totalGeneratedQuestionsAnswered: increment(1),
-          [`${topicField}Total`]: increment(1),
-        };
-        
-        if (isCorrect) {
-          updateData[`R${topicField}`] = increment(1);
-        }
-
         await updateDoc(userDocRef, updateData);
         
-<<<<<<< Updated upstream
-        // Update local state immediately for a responsive UI
-        setUserProgress(prevProgress => ({
-          ...prevProgress,
-          [`${topicField}Total`]: (prevProgress[`${topicField}Total`] || 0) + 1,
-          [`R${topicField}`]: isCorrect ? (prevProgress[`R${topicField}`] || 0) + 1 : prevProgress[`R${topicField}`] || 0,
-        }));
-
-        // Optionally, you can still call loadUserProgress to ensure all data is in sync
-        // await loadUserProgress(user.uid);
-=======
-        setUserProgress(prevProgress => ({
-          ...prevProgress,
-          [`${topicField}Total`]: (prevProgress[`${topicField}Total` as keyof UserProgress] as number || 0) + 1,
-          [`R${topicField}`]: isCorrect ? ((prevProgress[`R${topicField}` as keyof UserProgress] as number || 0) + 1) : (prevProgress[`R${topicField}` as keyof UserProgress] as number || 0),
-        }));
-
->>>>>>> Stashed changes
+        loadUserProgress(user.uid);
       } catch (error) {
         console.error("Error updating user progress:", error);
       }

@@ -1,13 +1,12 @@
 "use client";
 
 import Link from 'next/link'
-import Image from 'next/image' // Re-add this import
+import Image from 'next/image'
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { BarChart, BookOpen, CheckCircle, Gavel, Layers, Users, Menu } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useFirebase } from '../hooks/useFirebase'
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -310,13 +309,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-yellow-900 text-center">
-<<<<<<< Updated upstream
-            <p>&amp;copy; 2024 Lawerify. All rights reserved.</p>
-=======
-            <p>
-              &copy; 2024 Lawerify. All rights reserved.
-            </p>
->>>>>>> Stashed changes
+            <p>&copy; 2024 Lawerify. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -348,22 +341,18 @@ function TestimonialCard({ quote, author }: { quote: string; author: string }) {
 }
 
 function PricingCard({ title, price, features, highlighted = false }: { title: string; price: string; features: string[]; highlighted?: boolean }) {
-<<<<<<< Updated upstream
-=======
   const router = useRouter()
-  const { auth } = useFirebase()
 
   const handleChoosePlan = () => {
     const plan = { title, price, features }
     localStorage.setItem('selectedPlan', JSON.stringify(plan))
-    if (auth?.currentUser) {
+    if (localStorage.getItem('user')) {
       router.push('/payment')
     } else { 
       router.push('/signup')
     }
   }
 
->>>>>>> Stashed changes
   return (
     <div className={`p-8 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105 ${
       highlighted ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-black' : 'bg-white text-black'
@@ -391,8 +380,6 @@ function PricingCard({ title, price, features, highlighted = false }: { title: s
     </div>
   )
 }
-<<<<<<< Updated upstream
-=======
 
 function NavItem({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -404,4 +391,3 @@ function NavItem({ href, children }: { href: string; children: React.ReactNode }
     </Link>
   )
 }
->>>>>>> Stashed changes
