@@ -11,27 +11,177 @@ import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCirc
 import { ProgressSlider } from '../../components/ProgressSlider';
 import Link from 'next/link'
 import { Firestore } from "firebase/firestore"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
 
 // Mock questions for the practice test
 const mockQuestions = [
   {
-    question: "What is the term for a formal written statement by a defendant in a civil case?",
-    options: ["Affidavit", "Deposition", "Answer", "Interrogatory"],
-    correctAnswer: "Answer",
-    explanation: "An 'Answer' is the formal written statement made by a defendant in a civil case, responding to the plaintiff's complaint."
+    question: "The passage suggests that the main challenge faced by cities during the Industrial Revolution was:",
+    options: [
+      "a lack of technological innovation to manage large populations effectively.",
+      "environmental degradation caused by suburban sprawl.",
+      "the negative health impacts of overcrowding and poor sanitation.",
+      "the inefficient use of automobiles, leading to traffic congestion.",
+      "the inability to incorporate green spaces into urban planning."
+    ],
+    correctAnswer: "the negative health impacts of overcrowding and poor sanitation.",
+    explanation: "The passage mentions that the rapid growth of cities during the Industrial Revolution 'brought about significant challenges, including overcrowding, poor sanitation, and the spread of disease.'"
   },
   {
-    question: "In contract law, what is the term for a promise in exchange for a promise?",
-    options: ["Consideration", "Bilateral contract", "Unilateral contract", "Offer"],
-    correctAnswer: "Bilateral contract",
-    explanation: "A 'Bilateral contract' is formed when both parties exchange promises to perform, creating mutual obligations."
+    question: "Based on the passage, which of the following best characterizes the relationship between suburban sprawl and the environment?",
+    options: [
+      "Suburban sprawl reduces the environmental impact of cities by decentralizing populations.",
+      "Suburban sprawl has contributed to environmental issues such as increased reliance on automobiles and loss of open land.",
+      "Suburban sprawl helps protect natural environments by encouraging more people to live in rural areas.",
+      "Suburban sprawl has had little impact on the environment compared to urban development.",
+      "Suburban sprawl has primarily improved air quality by reducing the need for urban transportation networks."
+    ],
+    correctAnswer: "Suburban sprawl has contributed to environmental issues such as increased reliance on automobiles and loss of open land.",
+    explanation: "The passage states that 'Suburban sprawl led to increased reliance on automobiles, contributing to traffic congestion, air pollution, and a loss of open land.'"
   },
-  // Add a comma here
   {
-    question: "What does 'mens rea' refer to in criminal law?",
-    options: ["Guilty act", "Guilty mind", "Self-defense", "Reasonable doubt"],
-    correctAnswer: "Guilty mind",
-    explanation: "'Mens rea' is Latin for 'guilty mind' and refers to the mental state required to constitute a crime."
+    question: "The passage suggests that the success of smart cities will depend primarily on:",
+    options: [
+      "whether they can attract more residents to live in dense urban centers.",
+      "their ability to integrate digital technology without compromising privacy or security.",
+      "their capacity to provide economic opportunities for suburban populations.",
+      "the extent to which they can eliminate the need for traditional infrastructure, such as highways.",
+      "their effectiveness in promoting a return to the ideals of early 20th-century urban planning."
+    ],
+    correctAnswer: "their ability to integrate digital technology without compromising privacy or security.",
+    explanation: "The passage discusses both the potential benefits of smart cities and the concerns about privacy and security. The author implies that addressing these concerns will be crucial for the success of smart cities."
+  },
+  {
+    question: "The author mentions the 20th-century suburban boom primarily to illustrate:",
+    options: [
+      "a period of technological stagnation in urban planning.",
+      "how cities were transformed by the widespread use of automobiles.",
+      "the success of the Garden City movement in shaping modern suburbs.",
+      "the environmental benefits of moving populations away from crowded urban areas.",
+      "the challenges cities faced in adapting to new transportation technologies."
+    ],
+    correctAnswer: "how cities were transformed by the widespread use of automobiles.",
+    explanation: "The passage uses the suburban boom as an example of how 'the rise of the automobile further transformed urban environments,' leading to the expansion of cities and changes in living patterns."
+  },
+  {
+    question: "According to the passage, one way in which smart cities could improve energy efficiency is by:",
+    options: [
+      "promoting the use of public transportation instead of private automobiles.",
+      "monitoring and optimizing electricity use through smart energy grids.",
+      "encouraging more people to work remotely to reduce energy consumption in office buildings.",
+      "integrating nitrogen-fixing plants into urban landscapes to reduce the need for synthetic fertilizers.",
+      "reducing the reliance on fossil fuels by transitioning to electric vehicles in all urban areas."
+    ],
+    correctAnswer: "monitoring and optimizing electricity use through smart energy grids.",
+    explanation: "The passage states that 'smart energy grids can optimize electricity use, reducing energy consumption and costs.'"
+  },
+  {
+    question: "The author indicates that early 20th-century urban planning efforts, such as the Garden City movement, were primarily focused on:",
+    options: [
+      "creating large-scale industrial centers to accommodate factory workers.",
+      "developing suburban neighborhoods that prioritized privacy and space.",
+      "addressing the negative impacts of industrialization through the integration of green spaces.",
+      "building cities that minimized the use of automobiles by promoting public transportation.",
+      "expanding cities to accommodate rapid population growth following World War II."
+    ],
+    correctAnswer: "addressing the negative impacts of industrialization through the integration of green spaces.",
+    explanation: "The passage describes the Garden City movement as 'a reaction to the negative effects of industrialization' that envisioned communities 'surrounded by green spaces' to promote 'healthier living conditions.'"
+  },
+  {
+    question: "Which of the following most accurately characterizes the passage's discussion of the future of cities?",
+    options: [
+      "Cities are likely to become less important as technological advancements allow more people to live in rural areas.",
+      "Cities will need to adapt to both technological innovations and environmental challenges to remain viable.",
+      "The future of cities depends entirely on the successful implementation of smart city technologies.",
+      "Cities will inevitably return to the design principles of the Garden City movement.",
+      "The rise of remote work will lead to the abandonment of large urban centers."
+    ],
+    correctAnswer: "Cities will need to adapt to both technological innovations and environmental challenges to remain viable.",
+    explanation: "The passage concludes by stating that 'the future of cities will likely depend on how well they can adapt to technological changes while addressing the social, environmental, and economic challenges that have always been part of urban life.'"
+  },
+  {
+    question: "According to the passage, one of the primary differences between early agricultural societies and industrial agriculture is that:",
+    options: [
+      "Early societies relied on synthetic fertilizers, while industrial agriculture uses natural methods to improve soil fertility.",
+      "Early societies focused on sustaining the fertility of their soil, while industrial agriculture prioritizes crop yields over long-term environmental health.",
+      "Early societies were more efficient in producing high crop yields, while industrial agriculture has struggled to meet global food demands.",
+      "Industrial agriculture has been more successful in maintaining soil health than early farming communities.",
+      "Industrial agriculture primarily uses nitrogen-fixing plants, whereas early societies relied on monoculture."
+    ],
+    correctAnswer: "Early societies focused on sustaining the fertility of their soil, while industrial agriculture prioritizes crop yields over long-term environmental health.",
+    explanation: "The passage states that early agricultural societies developed methods to maintain soil fertility, while industrial agriculture, despite increasing crop yields, has led to environmental issues due to the excessive use of synthetic fertilizers and pesticides."
+  },
+  {
+    question: "The passage suggests that one potential drawback of monoculture is that it:",
+    options: [
+      "Reduces the efficiency of industrial agriculture by lowering crop yields.",
+      "Decreases biodiversity, which can make crops more susceptible to pests and diseases.",
+      "Prevents the integration of trees and other perennial plants into agricultural systems.",
+      "Relies heavily on natural methods of pest control, leading to fewer options for managing pests.",
+      "Increases the use of crop rotation and animal manure, which negatively impacts soil health."
+    ],
+    correctAnswer: "Decreases biodiversity, which can make crops more susceptible to pests and diseases.",
+    explanation: "The passage states that 'the reliance on monoculture — the cultivation of a single crop over vast areas — has reduced biodiversity, making crops more vulnerable to pests and diseases.'"
+  },
+  {
+    question: "The passage indicates that permaculture:",
+    options: [
+      "Is primarily practiced by large-scale farming operations due to its efficiency.",
+      "Focuses on mimicking natural ecosystems to create resilient agricultural systems.",
+      "Is a form of industrial agriculture that emphasizes the use of synthetic fertilizers and pesticides.",
+      "Has been rejected by proponents of sustainable agriculture for its inefficiency.",
+      "Promotes the use of monoculture to maximize crop yields in small-scale farms."
+    ],
+    correctAnswer: "Focuses on mimicking natural ecosystems to create resilient agricultural systems.",
+    explanation: "The passage describes permaculture as 'a holistic approach to farming that seeks to create self-sustaining agricultural ecosystems by mimicking the diversity and resilience of natural ecosystems.'"
+  },
+  {
+    question: "Based on the information in the passage, advocates of sustainable agriculture would most likely agree with which one of the following statements?",
+    options: [
+      "The environmental costs of industrial agriculture are overstated and do not justify a shift to sustainable practices.",
+      "Sustainable agriculture can help create more resilient food systems and healthier ecosystems in the long term.",
+      "The primary benefit of industrial agriculture is its ability to produce food with minimal environmental impact.",
+      "High crop yields should always take precedence over concerns about biodiversity and soil health.",
+      "Permaculture has little to offer modern farming practices because it cannot scale up to meet global food demands."
+    ],
+    correctAnswer: "Sustainable agriculture can help create more resilient food systems and healthier ecosystems in the long term.",
+    explanation: "The passage states that proponents of sustainable agriculture argue that 'the long-term benefits of sustainable agriculture, including healthier ecosystems and more resilient food systems, outweigh any short-term reduction in yields.'"
+  },
+  {
+    question: "The passage suggests that critics of sustainable agriculture are primarily concerned with:",
+    options: [
+      "The negative environmental impact of permaculture and other holistic farming practices.",
+      "The long-term sustainability of industrial agriculture in meeting global food needs.",
+      "The inability of sustainable farming practices to produce high enough yields to feed the world's population.",
+      "The potential for sustainable agriculture to damage ecosystems through the overuse of organic fertilizers.",
+      "The inefficiency of industrial agriculture compared to early agricultural methods."
+    ],
+    correctAnswer: "The inability of sustainable farming practices to produce high enough yields to feed the world's population.",
+    explanation: "The passage states that 'Critics argue that sustainable farming practices are less efficient and cannot produce the same high yields as industrial agriculture, making them insufficient to feed the world's growing population.'"
+  },
+  {
+    question: "The passage suggests that which one of the following is an advantage of integrated pest management (IPM)?",
+    options: [
+      "It minimizes the reliance on chemical pesticides while still effectively controlling pests.",
+      "It significantly increases crop yields by improving soil fertility over the long term.",
+      "It eliminates the need for organic fertilizers by enhancing the use of synthetic alternatives.",
+      "It encourages farmers to prioritize crop rotation over monoculture to maintain biodiversity.",
+      "It maximizes the use of nitrogen-fixing plants to ensure consistent soil health."
+    ],
+    correctAnswer: "It minimizes the reliance on chemical pesticides while still effectively controlling pests.",
+    explanation: "The passage mentions integrated pest management (IPM) as a key practice in sustainable agriculture 'to control pests without relying solely on chemical pesticides.'"
+  },
+  {
+    question: "The passage implies that one reason industrial agriculture has become the dominant model of food production globally is that:",
+    options: [
+      "It produces higher yields than sustainable agriculture, despite having greater environmental costs.",
+      "It is more environmentally friendly than early agricultural practices, such as crop rotation and the use of animal manure.",
+      "It has a stronger focus on maintaining soil health and biodiversity than sustainable agriculture.",
+      "It relies on natural methods, such as permaculture, to increase crop yields in large-scale farming operations.",
+      "It has proven to be more efficient than small-scale sustainable farming methods in reducing environmental degradation."
+    ],
+    correctAnswer: "It produces higher yields than sustainable agriculture, despite having greater environmental costs.",
+    explanation: "The passage states that 'industrial agriculture has become the dominant model of food production globally, largely due to its efficiency and ability to meet the growing demands of a rapidly expanding population,' despite the environmental issues it causes."
   }
 ]
 
@@ -122,6 +272,28 @@ function useUserProgress(userId: string | null, db: Firestore | null) {
   return { userProgress, setUserProgress, loadUserProgress };
 }
 
+const mockPassage = `The evolution of cities has always been closely tied to technological advancements. In the 19th century, the steam engine revolutionized transportation, enabling the development of railways and, in turn, the rapid growth of urban centers. Factories, once scattered across rural areas, began clustering in cities, and workers followed suit, resulting in the dense urban landscapes that characterized the Industrial Revolution. This mass migration was driven by the promise of economic opportunities, but it also brought about significant challenges, including overcrowding, poor sanitation, and the spread of disease.
+
+In response to these challenges, urban planners and architects began developing new approaches to city design. In the early 20th century, the Garden City movement, founded by Ebenezer Howard, emerged as a reaction to the negative effects of industrialization. Howard envisioned self-contained communities surrounded by green spaces, with a balance of residential, commercial, and agricultural areas. His ideas sought to blend the best aspects of urban and rural life, promoting healthier living conditions while maintaining access to economic opportunities. Although only a few true garden cities were ever built, the movement influenced the development of suburbs and the layout of modern cities.
+
+By the mid-20th century, the rise of the automobile further transformed urban environments. Cities expanded outward as highways and road networks were constructed, allowing people to live farther from their workplaces. The post-World War II suburban boom in the United States exemplifies this trend, as millions of people moved to newly built suburban neighborhoods, drawn by the promise of more space, privacy, and a perceived higher quality of life. However, this shift had its own drawbacks. Suburban sprawl led to increased reliance on automobiles, contributing to traffic congestion, air pollution, and a loss of open land.
+
+In the 21st century, cities face new challenges and opportunities related to technology. The rise of the internet and digital communication has enabled more people to work remotely, raising questions about the future of urban living. Some experts argue that cities will become less central to economic activity as more people choose to live in smaller towns or rural areas while staying connected through technology. Others believe that cities will continue to thrive, as they offer cultural, social, and economic advantages that cannot be easily replicated in less densely populated areas.
+
+At the same time, new technologies are reshaping urban infrastructure. "Smart cities," which integrate digital technology into transportation, energy, and public services, are becoming increasingly common. Proponents argue that smart cities can improve efficiency, reduce waste, and enhance the quality of life for residents. For example, sensor networks can monitor traffic in real time, helping to reduce congestion and lower emissions. Similarly, smart energy grids can optimize electricity use, reducing energy consumption and costs. However, critics raise concerns about privacy and security, as the widespread collection of data in smart cities could potentially be misused.
+
+Ultimately, the future of cities will likely depend on how well they can adapt to technological changes while addressing the social, environmental, and economic challenges that have always been part of urban life. As cities continue to evolve, finding a balance between innovation and sustainability will be key to ensuring that urban areas remain vibrant, livable, and resilient in the face of ongoing change.
+
+In the early stages of agricultural development, farming communities around the world faced numerous challenges that threatened the sustainability of their settlements. One of the most significant of these challenges was the depletion of soil nutrients, which could lead to a decline in crop yields and eventually force communities to abandon their land in search of more fertile areas. To address this, ancient farmers developed various methods to maintain the fertility of their soil, including crop rotation, the use of animal manure, and the introduction of nitrogen-fixing plants such as legumes. These innovations allowed early agricultural societies to sustain their food production over long periods of time.
+
+However, the rise of industrial agriculture in the 20th century brought about a different set of challenges. While the widespread use of synthetic fertilizers and pesticides led to significant increases in crop yields, it also resulted in a range of environmental issues. The excessive use of synthetic fertilizers, for example, has led to the contamination of water supplies with nitrates, contributing to the growth of harmful algal blooms in rivers, lakes, and oceans. Additionally, the reliance on monoculture — the cultivation of a single crop over vast areas — has reduced biodiversity, making crops more vulnerable to pests and diseases. Despite these problems, industrial agriculture has become the dominant model of food production globally, largely due to its efficiency and ability to meet the growing demands of a rapidly expanding population.
+
+In response to the environmental concerns associated with industrial agriculture, a movement known as sustainable agriculture has gained traction in recent decades. Advocates of sustainable agriculture argue that it is possible to produce food in a way that minimizes harm to the environment while still meeting the needs of human populations. Key practices in sustainable agriculture include the use of organic fertilizers, integrated pest management (IPM) to control pests without relying solely on chemical pesticides, and agroforestry, which involves the integration of trees and other perennial plants into agricultural systems to promote biodiversity and improve soil health.
+
+One prominent example of a sustainable agriculture practice is permaculture, a holistic approach to farming that seeks to create self-sustaining agricultural ecosystems by mimicking the diversity and resilience of natural ecosystems. Permaculture emphasizes the importance of working with nature rather than against it, encouraging farmers to consider factors such as water management, soil health, and biodiversity in their decision-making processes. Though permaculture is often practiced on a small scale, its principles have inspired many larger-scale farming operations to adopt more sustainable methods.
+
+Despite the promise of sustainable agriculture, it remains a relatively small part of global food production. Critics argue that sustainable farming practices are less efficient and cannot produce the same high yields as industrial agriculture, making them insufficient to feed the world's growing population. Proponents, however, contend that the long-term benefits of sustainable agriculture, including healthier ecosystems and more resilient food systems, outweigh any short-term reduction in yields. They also argue that many of the environmental and social costs of industrial agriculture, such as pollution and the displacement of small farmers, are not accounted for in conventional economic models.`;
+
 export default function DashboardPage() {
   const [user, setUser] = useState<FirebaseUser | null>(null)
   const [showTest, setShowTest] = useState(false)
@@ -138,6 +310,8 @@ export default function DashboardPage() {
   const router = useRouter()
   const { auth, db } = useFirebase()
   const { userProgress, setUserProgress, loadUserProgress } = useUserProgress(user?.uid || null, db)
+  const [questionStatus, setQuestionStatus] = useState<Array<'unanswered' | 'answered' | 'unsure'>>([]);
+  const [activeTab, setActiveTab] = useState("questions");
 
   const ensureUserDocument = useCallback(async (userId: string) => {
     if (!db) return;
@@ -199,13 +373,31 @@ export default function DashboardPage() {
     setSelectedAnswer(null);
     setShowExplanation(false);
     setCorrectAnswers(0);
+    setQuestionStatus(new Array(mockQuestions.length).fill('unanswered'));
   }
 
-  const handleAnswer = (selected: string) => {
+  const handleAnswer = async (selected: string) => {
     setSelectedAnswer(selected)
     setShowExplanation(true)
-    if (selected === mockQuestions[currentQuestion].correctAnswer) {
+    const isCorrect = selected === mockQuestions[currentQuestion].correctAnswer;
+    if (isCorrect) {
       setCorrectAnswers(prev => prev + 1)
+    }
+    
+    // Update question status
+    const newStatus = [...questionStatus];
+    newStatus[currentQuestion] = 'answered';
+    setQuestionStatus(newStatus);
+
+    // Update user progress
+    if (user && db) {
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, {
+        totalQuestionsAnswered: increment(1),
+        RReadingComprehension: isCorrect ? increment(1) : increment(0),
+        ReadingComprehensionTotal: increment(1)
+      });
+      await loadUserProgress(user.uid);
     }
   }
 
@@ -217,6 +409,19 @@ export default function DashboardPage() {
     } else {
       handleTestCompletion();
     }
+  }
+
+  const jumpToQuestion = (index: number) => {
+    setCurrentQuestion(index);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    setActiveTab("questions");  // Switch to the Questions tab
+  }
+
+  const markQuestionAsUnsure = () => {
+    const newStatus = [...questionStatus];
+    newStatus[currentQuestion] = 'unsure';
+    setQuestionStatus(newStatus);
   }
 
   const handleTopicSelect = async (topic: string) => {
@@ -411,44 +616,81 @@ export default function DashboardPage() {
         </div>
         
         {showTest ? (
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Question {currentQuestion + 1} of {mockQuestions.length}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-4">{mockQuestions[currentQuestion].question}</p>
-              <div className="space-y-2">
-                {mockQuestions[currentQuestion].options.map((option, index) => (
-                  <div key={index} className="mb-4">
-                    <Button
-                      onClick={() => handleAnswer(option)}
-                      className={`w-full text-left justify-start ${
-                        selectedAnswer === option ? 'bg-gray-200' : ''
-                      }`}
-                      variant="outline"
-                      disabled={showExplanation}
-                    >
-                      {option}
-                      {showExplanation && option === mockQuestions[currentQuestion].correctAnswer && (
-                        <CheckCircle className="ml-2 text-green-500" />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList>
+              <TabsTrigger value="questions">Questions</TabsTrigger>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+            </TabsList>
+            <TabsContent value="questions">
+              <div className="flex flex-col md:flex-row">
+                <div className="w-full md:w-1/2 pr-4 overflow-y-auto" style={{maxHeight: "80vh"}}>
+                  <h3 className="text-xl font-bold mb-4">Passage</h3>
+                  <p className="whitespace-pre-line">
+                    {currentQuestion < 13 
+                      ? mockPassage.split('\n\n').slice(0, 6).join('\n\n')  // First 6 paragraphs for urban questions
+                      : mockPassage.split('\n\n').slice(6).join('\n\n')     // Last 5 paragraphs for agricultural questions
+                    }
+                  </p>
+                </div>
+                <div className="w-full md:w-1/2 pl-4">
+                  <Card className="mt-8">
+                    <CardHeader>
+                      <CardTitle>Question {currentQuestion + 1} of {mockQuestions.length}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="mb-4">{mockQuestions[currentQuestion].question}</p>
+                      <div className="space-y-4">
+                        {mockQuestions[currentQuestion].options.map((option, index) => (
+                          <Button
+                            key={index}
+                            onClick={() => handleAnswer(option)}
+                            disabled={!!selectedAnswer}
+                            className={`w-full text-left justify-start h-auto py-3 px-4 whitespace-normal ${
+                              selectedAnswer === option
+                                ? option === mockQuestions[currentQuestion].correctAnswer
+                                  ? 'bg-green-500 hover:bg-green-600'
+                                  : 'bg-red-500 hover:bg-red-600'
+                                : ''
+                            }`}
+                          >
+                            {option}
+                          </Button>
+                        ))}
+                      </div>
+                      {showExplanation && (
+                        <div className="mt-4 p-4 bg-blue-100 rounded-md">
+                          <h4 className="font-bold mb-2">Explanation:</h4>
+                          <p>{mockQuestions[currentQuestion].explanation}</p>
+                        </div>
                       )}
-                      {showExplanation && selectedAnswer === option && option !== mockQuestions[currentQuestion].correctAnswer && (
-                        <X className="ml-2 text-red-500" />
-                      )}
-                    </Button>
-                    {showExplanation && selectedAnswer === option && option !== mockQuestions[currentQuestion].correctAnswer && (
-                      <p className="text-red-500 mt-2">{mockQuestions[currentQuestion].explanation}</p>
-                    )}
-                  </div>
+                      <div className="mt-4 flex justify-between">
+                        <Button onClick={markQuestionAsUnsure} disabled={!!selectedAnswer}>
+                          Mark as Unsure
+                        </Button>
+                        <Button onClick={nextQuestion} disabled={!selectedAnswer}>
+                          {currentQuestion < mockQuestions.length - 1 ? 'Next Question' : 'Finish Test'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="overview">
+              <div className="grid grid-cols-5 gap-4">
+                {questionStatus.map((status, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => jumpToQuestion(index)}
+                    variant={status === 'answered' ? 'default' : status === 'unsure' ? 'outline' : 'secondary'}
+                    className={`w-full ${currentQuestion === index ? 'ring-2 ring-yellow-500' : ''}`}
+                  >
+                    {index + 1}
+                  </Button>
                 ))}
               </div>
-              {showExplanation && (
-                <Button onClick={nextQuestion} className="mt-4">
-                  {currentQuestion < mockQuestions.length - 1 ? 'Next Question' : 'Finish Test'}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+            </TabsContent>
+          </Tabs>
         ) : (
           <>
             <Card className="mb-8">
@@ -462,11 +704,9 @@ export default function DashboardPage() {
             
             <ProgressCard progress={userProgress} />
             
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Question Type Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+              <h3 className="text-lg font-semibold mb-4">Question Type Performance</h3>
+              <div className="flex flex-col md:flex-row justify-between">
                 <ProgressSlider 
                   label="Logical Reasoning" 
                   correct={userProgress.RLogicalReasoning} 
@@ -482,8 +722,8 @@ export default function DashboardPage() {
                   correct={userProgress.RReadingComprehension} 
                   total={userProgress.ReadingComprehensionTotal} 
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
             <h2 className="text-2xl font-bold mb-4">Practice Tests</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
