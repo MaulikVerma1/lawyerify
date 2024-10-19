@@ -54,13 +54,15 @@ export default function HomePage() {
               </div>
               <div className="relative flex flex-col items-center justify-center h-[300px]">
                 <motion.div
-                  initial={{ rotate: -45, y: -50 }}
-                  animate={{ rotate: 0, y: 0 }}
+                  initial={{ rotate: 0, y: 0 }}
+                  animate={{ rotate: 90, y: 0 }}
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 30,
-                    duration: 0.5,
+                    stiffness: 300,
+                    damping: 20,
+                    duration: 1.5,
+                    repeat: Infinity,
+                    repeatType: "reverse"
                   }}
                   className="w-64 h-64 relative"
                 >

@@ -603,7 +603,7 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">
             <Gavel className="h-8 w-8 mr-2 text-yellow-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Lawerify Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Lawyerify Dashboard</h1>
           </div>
           <div className="flex items-center space-x-4">
             <Link href="/upgrade">
