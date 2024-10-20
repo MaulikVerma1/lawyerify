@@ -15,7 +15,7 @@ export default function HomePage() {
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold flex items-center">
             <Gavel className="mr-2" />
-            Lawerify
+            Lawyerify
           </Link>
           <nav className="hidden md:flex items-center space-x-1">
             <NavItem href="/">Home</NavItem>
@@ -38,7 +38,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-4xl md:text-6xl font-extrabold text-black mb-6 leading-tight">
-                  Ace the LSAT with <span className="text-yellow-500">Lawerify</span>
+                  Ace the LSAT with <span className="text-yellow-500">Lawyerify</span>
                 </h1>
                 <p className="text-xl text-gray-700 mb-8">
                   Personalized practice, AI-powered insights, and a community of future lawyers to support your journey.
@@ -87,7 +87,7 @@ export default function HomePage() {
 
         <section id="features" className="py-20 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-black mb-12">Why Choose Lawerify?</h2>
+            <h2 className="text-3xl font-bold text-center text-black mb-12">Why Choose Lawyerify?</h2>
             <Tabs defaultValue="practice" className="w-full max-w-3xl mx-auto">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="practice">Practice</TabsTrigger>
@@ -201,7 +201,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-3xl filter blur-xl opacity-30 -rotate-6"></div>
                 <div className="relative rounded-3xl overflow-hidden shadow-xl">
                   <div className="w-full h-[300px] bg-gray-300 flex items-center justify-center text-gray-600">
-                    Lawerify Dashboard
+                    Lawyerify Dashboard
                   </div>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-center text-black mb-12">Join Thousands of Successful LSAT Takers</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <TestimonialCard
-                quote="Lawerify's practice questions and analytics helped me improve my score by 12 points!"
+                quote="Lawyerify's practice questions and analytics helped me improve my score by 12 points!"
                 author="Sarah J., Harvard Law"
               />
               <TestimonialCard
@@ -222,7 +222,7 @@ export default function HomePage() {
                 author="Michael T., Stanford Law"
               />
               <TestimonialCard
-                quote="I credit my 175 LSAT score to Lawerify's comprehensive study materials and adaptive learning."
+                quote="I credit my 175 LSAT score to Lawyerify's comprehensive study materials and adaptive learning."
                 author="Emily R., Yale Law"
               />
             </div>
@@ -256,7 +256,7 @@ export default function HomePage() {
         <section className="py-20 bg-black text-yellow-400">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">Ready to Ace Your LSAT?</h2>
-            <p className="text-xl mb-8">Join Lawerify today and start your journey to law school success.</p>
+            <p className="text-xl mb-8">Join Lawyerify today and start your journey to law school success.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button size="lg" className="bg-yellow-400 text-black hover:bg-yellow-500 transition-colors">
                 <Link href="/signup">Start Free Trial</Link>
@@ -306,7 +306,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-yellow-900 text-center">
-            <p>&copy; 2024 Lawerify. All rights reserved.</p>
+            <p>&copy; 2024 Lawyerify. All rights reserved.</p>
           </div>
         </div>
       </footer>
