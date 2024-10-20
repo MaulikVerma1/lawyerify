@@ -638,33 +638,34 @@ export default function DashboardPage() {
                       <CardTitle>Question {currentQuestion + 1} of {mockQuestions.length}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="mb-4">{mockQuestions[currentQuestion].question}</p>
-                      <div className="space-y-4">
+                      <p className="mb-6 text-lg font-medium">{mockQuestions[currentQuestion].question}</p>
+                      <div className="space-y-3">
                         {mockQuestions[currentQuestion].options.map((option, index) => (
-                          <Button
+                          <button
                             key={index}
                             onClick={() => handleAnswer(option)}
                             disabled={!!selectedAnswer}
-                            className={`w-full text-left justify-start h-auto py-3 px-4 whitespace-normal ${
+                            className={`w-full text-left py-3 px-4 rounded-md transition-colors duration-200 ${
                               selectedAnswer === option
                                 ? option === mockQuestions[currentQuestion].correctAnswer
-                                  ? 'bg-green-500 hover:bg-green-600'
-                                  : 'bg-red-500 hover:bg-red-600'
-                                : ''
-                            }`}
+                                  ? 'bg-green-100 text-green-800 border-green-300'
+                                  : 'bg-red-100 text-red-800 border-red-300'
+                                : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+                            } border`}
                           >
+                            <span className="font-medium mr-2">{String.fromCharCode(65 + index)}.</span>
                             {option}
-                          </Button>
+                          </button>
                         ))}
                       </div>
                       {showExplanation && (
-                        <div className="mt-4 p-4 bg-blue-100 rounded-md">
-                          <h4 className="font-bold mb-2">Explanation:</h4>
-                          <p>{mockQuestions[currentQuestion].explanation}</p>
+                        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                          <h4 className="font-bold mb-2 text-blue-800">Explanation:</h4>
+                          <p className="text-blue-700">{mockQuestions[currentQuestion].explanation}</p>
                         </div>
                       )}
-                      <div className="mt-4 flex justify-between">
-                        <Button onClick={markQuestionAsUnsure} disabled={!!selectedAnswer}>
+                      <div className="mt-6 flex justify-between">
+                        <Button onClick={markQuestionAsUnsure} disabled={!!selectedAnswer} variant="outline">
                           Mark as Unsure
                         </Button>
                         <Button onClick={nextQuestion} disabled={!selectedAnswer}>
@@ -683,9 +684,15 @@ export default function DashboardPage() {
                     key={index}
                     onClick={() => jumpToQuestion(index)}
                     variant={status === 'answered' ? 'default' : status === 'unsure' ? 'outline' : 'secondary'}
-                    className={`w-full ${currentQuestion === index ? 'ring-2 ring-yellow-500' : ''}`}
+                    className={`w-full h-12 flex items-center justify-center ${currentQuestion === index ? 'ring-2 ring-yellow-500' : ''}`}
                   >
-                    {index + 1}
+                    <span className="mr-1">{index + 1}</span>
+                    {status === 'unsure' && (
+                      <Bookmark className="h-4 w-4 text-yellow-500" />
+                    )}
+                    {status === 'answered' && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
                   </Button>
                 ))}
               </div>
