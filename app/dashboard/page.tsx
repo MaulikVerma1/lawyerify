@@ -2,17 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User as FirebaseUser, signOut, onAuthStateChanged } from "firebase/auth"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth"
 import { doc, getDoc, setDoc, updateDoc, increment, DocumentData, FieldValue } from "firebase/firestore"
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, CreditCard, ArrowLeft } from 'lucide-react'
-import { ProgressSlider } from '../../components/ProgressSlider';
-import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card"
+import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, ArrowLeft } from 'lucide-react'
+import { ProgressSlider } from '../../components/ProgressSlider'
 import { Firestore } from "firebase/firestore"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
-import { mockPassage, artPassage, cognitiveNeurosciencePassage } from './passages';
+import { mockPassage, artPassage, cognitiveNeurosciencePassage } from './passages'
+// import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -358,31 +359,31 @@ interface GeneratedQuestion {
 
 function ProgressCard({ progress }: { progress: UserProgress }) {
   return (
-    <Card className="mb-8">
+    <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg">
       <CardHeader>
-        <CardTitle>Your Progress</CardTitle>
+        <CardTitle className="text-2xl text-indigo-800">Your Progress</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex flex-col items-center">
-            <Trophy className="h-8 w-8 text-yellow-500 mb-2" />
-            <p className="text-sm text-gray-500">Latest Score</p>
-            <p className="text-xl font-bold">{progress.latestTestScore}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow">
+            <Trophy className="h-10 w-10 text-yellow-500 mb-2" />
+            <p className="text-sm text-gray-500 font-medium">Latest Score</p>
+            <p className="text-2xl font-bold text-indigo-700">{progress.latestTestScore}</p>
           </div>
-          <div className="flex flex-col items-center">
-            <BookOpen className="h-8 w-8 text-blue-500 mb-2" />
-            <p className="text-sm text-gray-500">Tests Completed</p>
-            <p className="text-xl font-bold">{progress.totalTestsCompleted}</p>
+          <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow">
+            <BookOpen className="h-10 w-10 text-blue-500 mb-2" />
+            <p className="text-sm text-gray-500 font-medium">Tests Completed</p>
+            <p className="text-2xl font-bold text-indigo-700">{progress.totalTestsCompleted}</p>
           </div>
-          <div className="flex flex-col items-center">
-            <CheckCircleIcon className="h-8 w-8 text-green-500 mb-2" />
-            <p className="text-sm text-gray-500">Questions Answered</p>
-            <p className="text-xl font-bold">{progress.totalQuestionsAnswered}</p>
+          <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow">
+            <CheckCircleIcon className="h-10 w-10 text-green-500 mb-2" />
+            <p className="text-sm text-gray-500 font-medium">Questions Answered</p>
+            <p className="text-2xl font-bold text-indigo-700">{progress.totalQuestionsAnswered}</p>
           </div>
-          <div className="flex flex-col items-center">
-            <Target className="h-8 w-8 text-red-500 mb-2" />
-            <p className="text-sm text-gray-500">Current Test</p>
-            <p className="text-xl font-bold">{progress.testID || 'None'}</p>
+          <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow">
+            <Target className="h-10 w-10 text-red-500 mb-2" />
+            <p className="text-sm text-gray-500 font-medium">Current Test</p>
+            <p className="text-2xl font-bold text-indigo-700">{progress.testID || 'None'}</p>
           </div>
         </div>
       </CardContent>
@@ -481,16 +482,6 @@ export default function DashboardPage() {
 
     return () => unsubscribe();
   }, [auth, db, ensureUserDocument, loadUserProgress, setUserProgress]);
-
-  const handleSignOut = async () => {
-    if (!auth) return;
-    try {
-      await signOut(auth)
-      router.push('/login')
-    } catch (error) {
-      console.error('Error signing out:', error)
-    }
-  }
 
   const startTest = () => {
     setShowTest(true);
@@ -723,21 +714,18 @@ export default function DashboardPage() {
   console.log('Current Generated Question:', currentGeneratedQuestion);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-yellow-100 p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
+      <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">
-            <Gavel className="h-8 w-8 mr-2 text-yellow-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Lawyerify Dashboard</h1>
+            <Gavel className="h-10 w-10 mr-3 text-indigo-600" />
+            <h1 className="text-4xl font-bold text-gray-900">Lawerify Dashboard</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <Link href="/upgrade">
-              <Button variant="outline">
-                <CreditCard className="mr-2 h-4 w-4" /> Upgrade
-              </Button>
-            </Link>
-            <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
-          </div>
+          {/* Comment out or remove the Avatar component */}
+          {/* <Avatar className="h-16 w-16">
+            <AvatarImage src="/avatar-placeholder.png" alt="User avatar" />
+            <AvatarFallback>US</AvatarFallback>
+          </Avatar> */}
         </div>
         
         {showTest ? (
@@ -843,67 +831,71 @@ export default function DashboardPage() {
           </Tabs>
         ) : (
           <>
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Welcome, {user.email}!</CardTitle>
+            <Card className="mb-8 bg-white shadow-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div>
+                  <CardTitle className="text-2xl font-bold">Welcome, {user.email}!</CardTitle>
+                  <CardDescription>This is your personal dashboard. Manage your cases, appointments, and take practice tests.</CardDescription>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p>This is your personal dashboard. Here you can manage your cases, appointments, and take practice tests.</p>
-              </CardContent>
             </Card>
             
             <ProgressCard progress={userProgress} />
             
-            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-              <h3 className="text-lg font-semibold mb-4">Question Type Performance</h3>
-              <div className="flex flex-col md:flex-row justify-between">
-                <ProgressSlider 
-                  label="Logical Reasoning" 
-                  correct={userProgress.RLogicalReasoning} 
-                  total={userProgress.LogicalReasoningTotal} 
-                />
-                <ProgressSlider 
-                  label="Analytical Reasoning" 
-                  correct={userProgress.RAnalyticalReasoning} 
-                  total={userProgress.AnalyticalReasoningTotal} 
-                />
-                <ProgressSlider 
-                  label="Reading Comprehension" 
-                  correct={userProgress.RReadingComprehension} 
-                  total={userProgress.ReadingComprehensionTotal} 
-                />
-              </div>
-            </div>
+            <Card className="bg-white shadow-lg mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-gray-800">Question Type Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                  <ProgressSlider 
+                    label="Logical Reasoning" 
+                    correct={userProgress.RLogicalReasoning} 
+                    total={userProgress.LogicalReasoningTotal} 
+                  />
+                  <ProgressSlider 
+                    label="Analytical Reasoning" 
+                    correct={userProgress.RAnalyticalReasoning} 
+                    total={userProgress.AnalyticalReasoningTotal} 
+                  />
+                  <ProgressSlider 
+                    label="Reading Comprehension" 
+                    correct={userProgress.RReadingComprehension} 
+                    total={userProgress.ReadingComprehensionTotal} 
+                  />
+                </div>
+              </CardContent>
+            </Card>
             
-            <h2 className="text-2xl font-bold mb-4">Practice Tests</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="mb-4">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Practice Tests</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
                 <CardHeader>
-                  <CardTitle>LSAT Practice Test 1</CardTitle>
+                  <CardTitle className="text-xl font-bold">LSAT Practice Test 1</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {userProgress.totalTestsCompleted > 0 ? (
                     <>
-                      <p>Latest Score: {userProgress.latestTestScore} / {mockQuestions.length}</p>
-                      <p>Percentage: {((userProgress.latestTestScore / mockQuestions.length) * 100).toFixed(2)}%</p>
+                      <p className="text-lg">Latest Score: <span className="font-bold text-indigo-600">{userProgress.latestTestScore}</span> / {mockQuestions.length}</p>
+                      <p className="text-lg">Percentage: <span className="font-bold text-indigo-600">{((userProgress.latestTestScore / mockQuestions.length) * 100).toFixed(2)}%</span></p>
                     </>
                   ) : (
-                    <p>You haven&apos;t taken this test yet.</p>
+                    <p className="text-lg">You haven&apos;t taken this test yet.</p>
                   )}
-                  <Button onClick={startTest} className="mt-4">
+                  <Button onClick={startTest} className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                     {userProgress.totalTestsCompleted > 0 ? 'Retake Test' : 'Start Test'}
                   </Button>
                 </CardContent>
               </Card>
 
               {[2, 3, 4, 5].map((testNumber) => (
-                <Card key={testNumber} className="mb-4">
+                <Card key={testNumber} className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
                   <CardHeader>
-                    <CardTitle>LSAT Practice Test {testNumber}</CardTitle>
+                    <CardTitle className="text-xl font-bold">LSAT Practice Test {testNumber}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>This test is locked.</p>
-                    <Button disabled className="mt-4">
+                    <p className="text-lg">This test is locked.</p>
+                    <Button disabled className="mt-4 w-full bg-gray-300 text-gray-600 cursor-not-allowed">
                       <Lock className="mr-2 h-4 w-4" /> Unlock
                     </Button>
                   </CardContent>
@@ -911,22 +903,23 @@ export default function DashboardPage() {
               ))}
             </div>
             
-            <h2 className="text-2xl font-bold mb-4 mt-8">Generated Questions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Generated Questions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {lsatTopics.map((topic) => (
                 <Button
                   key={topic}
                   onClick={() => handleTopicSelect(topic)}
                   variant={selectedTopic === topic ? "default" : "outline"}
+                  className={`text-lg font-medium ${selectedTopic === topic ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
                 >
                   {topic}
                 </Button>
               ))}
             </div>
             {selectedTopic && (
-              <Card className="mb-8">
+              <Card className="mb-8 bg-white shadow-lg">
                 <CardHeader>
-                  <CardTitle>{selectedTopic}</CardTitle>
+                  <CardTitle className="text-2xl font-bold">{selectedTopic}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
@@ -1023,8 +1016,8 @@ export default function DashboardPage() {
               </Card>
             )}
             <div className="mt-8">
-              <Button onClick={() => router.push('/bookmarks')} variant="outline">
-                View Bookmarked Questions
+              <Button onClick={() => router.push('/bookmarks')} variant="outline" className="bg-white hover:bg-yellow-50 text-yellow-600 border-yellow-200">
+                <Bookmark className="mr-2 h-4 w-4" /> View Bookmarked Questions
               </Button>
             </div>
           </>
