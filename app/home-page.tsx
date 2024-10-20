@@ -53,32 +53,44 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="relative flex flex-col items-center justify-center h-[300px]">
-                <motion.div
-                  initial={{ rotate: 0, y: 0 }}
-                  animate={{ rotate: 90, y: 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 20,
-                    duration: 1.5,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                  className="w-64 h-64 relative"
-                >
-                  <Gavel className="w-full h-full text-yellow-500" />
-                </motion.div>
-                <div className="w-full h-2 bg-yellow-500 mt-4" />
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.8] }}
-                  transition={{
-                    duration: 0.3,
-                    delay: 0.5,
-                  }}
-                  className="absolute bottom-16 left-1/2 w-16 h-16 bg-yellow-200 rounded-full -translate-x-1/2"
-                  style={{ boxShadow: "0 0 20px 10px rgba(250, 204, 21, 0.4)" }}
-                />
+                <div className="relative w-64 h-64">
+                  <motion.div
+                    initial={{ rotate: -45, y: -40, x: -50 }}
+                    animate={{ rotate: 45, y: 20, x: -50 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                      duration: 1.5
+                    }}
+                    className="w-full h-full"
+                  >
+                    <Gavel className="w-full h-full text-yellow-500" />
+                  </motion.div>
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 1.5, 1], opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 1.5,
+                      times: [0, 0.2, 1]
+                    }}
+                    className="absolute top-0 right-0 w-24 h-24"
+                  >
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <motion.path
+                        d="M25,50 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0"
+                        fill="none"
+                        stroke="rgba(250, 204, 21, 0.6)"
+                        strokeWidth="4"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.5, delay: 1.5 }}
+                      />
+                    </svg>
+                  </motion.div>
+                  <div className="absolute bottom-8 left-1/2 w-[200%] h-2 bg-yellow-500 -translate-x-1/2" />
+                </div>
               </div>
             </div>
           </div>
