@@ -12,7 +12,7 @@ import { ProgressSlider } from '../../components/ProgressSlider';
 import Link from 'next/link'
 import { Firestore } from "firebase/firestore"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
-import { mockPassage, artPassage, agriculturePassage, cognitiveNeurosciencePassage } from './passages';
+import { mockPassage, artPassage, cognitiveNeurosciencePassage } from './passages';
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -414,7 +414,7 @@ function useUserProgress(userId: string | null, db: Firestore | null) {
     if (userId && db) {
       loadUserProgress(userId);
     }
-  }, [userId, db, loadUserProgress]);
+  }, [userId, db, loadUserProgress, setUserProgress]);
 
   return { userProgress, setUserProgress, loadUserProgress };
 }
@@ -480,7 +480,7 @@ export default function DashboardPage() {
     });
 
     return () => unsubscribe();
-  }, [auth, db, ensureUserDocument, loadUserProgress]);
+  }, [auth, db, ensureUserDocument, loadUserProgress, setUserProgress]);
 
   const handleSignOut = async () => {
     if (!auth) return;
