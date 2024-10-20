@@ -7,7 +7,7 @@ import { doc, getDoc, setDoc, updateDoc, increment, DocumentData, FieldValue } f
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, CreditCard } from 'lucide-react'
+import { Gavel, Lock, CheckCircle, X, Trophy, BookOpen, CheckCircle as CheckCircleIcon, Target, Bookmark, CreditCard, ArrowLeft } from 'lucide-react'
 import { ProgressSlider } from '../../components/ProgressSlider';
 import Link from 'next/link'
 import { Firestore } from "firebase/firestore"
@@ -633,7 +633,14 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <div className="w-full md:w-1/2 pl-4">
-                  <Card className="mt-8">
+                  <Button 
+                    onClick={() => setShowTest(false)} 
+                    variant="outline" 
+                    className="mb-4"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+                  </Button>
+                  <Card className="mt-4">
                     <CardHeader>
                       <CardTitle>Question {currentQuestion + 1} of {mockQuestions.length}</CardTitle>
                     </CardHeader>
