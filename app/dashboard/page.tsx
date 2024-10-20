@@ -12,6 +12,7 @@ import { ProgressSlider } from '../../components/ProgressSlider';
 import Link from 'next/link'
 import { Firestore } from "firebase/firestore"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import { mockPassage, artPassage, agriculturePassage, cognitiveNeurosciencePassage } from './passages';
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -85,7 +86,7 @@ const mockQuestions = [
       "expanding cities to accommodate rapid population growth following World War II."
     ],
     correctAnswer: "addressing the negative impacts of industrialization through the integration of green spaces.",
-    explanation: "The passage describes the Garden City movement as 'a reaction to the negative effects of industrialization' that envisioned communities 'surrounded by green spaces' to promote 'healthier living conditions.'"
+    explanation: "The passage describes the Garden City movement as 'a reaction to the negative effects of industrialization' that envisioned communities 'surrounded by green spaces' to promote 'healthier living conditions' while maintaining access to economic opportunities."
   },
   {
     question: "Which of the following most accurately characterizes the passage's discussion of the future of cities?",
@@ -100,7 +101,7 @@ const mockQuestions = [
     explanation: "The passage concludes by stating that 'the future of cities will likely depend on how well they can adapt to technological changes while addressing the social, environmental, and economic challenges that have always been part of urban life.'"
   },
   {
-    question: "According to the passage, one of the primary differences between early agricultural societies and industrial agriculture is that:",
+    question: "According to the passage, one primary difference between early agricultural societies and industrial agriculture is that:",
     options: [
       "Early societies relied on synthetic fertilizers, while industrial agriculture uses natural methods to improve soil fertility.",
       "Early societies focused on sustaining the fertility of their soil, while industrial agriculture prioritizes crop yields over long-term environmental health.",
@@ -182,6 +183,151 @@ const mockQuestions = [
     ],
     correctAnswer: "It produces higher yields than sustainable agriculture, despite having greater environmental costs.",
     explanation: "The passage states that 'industrial agriculture has become the dominant model of food production globally, largely due to its efficiency and ability to meet the growing demands of a rapidly expanding population,' despite the environmental issues it causes."
+  },
+  {
+    question: "According to the passage, Plato believed that art should:",
+    options: [
+      "reflect the beauty of the natural world.",
+      "serve as a form of moral instruction.",
+      "prioritize individual creativity over social issues.",
+      "avoid engaging with political topics.",
+      "focus solely on aesthetic pleasure."
+    ],
+    correctAnswer: "serve as a form of moral instruction.",
+    explanation: "The passage specifically says that Plato believed art should 'reflect moral truths' and contribute to society's moral betterment. This shows that Plato saw art as a way to teach and guide people toward virtuous behavior, making this answer correct."
+  },
+  {
+    question: "The shift in the Renaissance toward a more humanistic approach to art is characterized by:",
+    options: [
+      "an emphasis on moral instruction through art.",
+      "the depiction of ordinary people and their struggles.",
+      "the celebration of individual creativity and the human form.",
+      "a focus on abstract, emotional experiences.",
+      "the critique of established social norms."
+    ],
+    correctAnswer: "the celebration of individual creativity and the human form.",
+    explanation: "The passage explains that Renaissance artists like Leonardo da Vinci and Michelangelo celebrated 'individual creativity and expression' and depicted 'the beauty of the human form.' This emphasis on humanism marked a departure from Plato's focus on moral instruction."
+  },
+  {
+    question: "Realist painters like Gustave Courbet were primarily concerned with:",
+    options: [
+      "creating abstract images that evoke emotional responses.",
+      "highlighting the lives and struggles of ordinary people.",
+      "celebrating the beauty of the human form.",
+      "providing an escape from political and social issues.",
+      "focusing on the personal, internal experiences of the artist."
+    ],
+    correctAnswer: "highlighting the lives and struggles of ordinary people.",
+    explanation: "The passage directly states that Realist painters like Courbet sought to 'depict the lives of ordinary people' and highlight societal struggles, particularly those of the working class. This makes this the correct answer."
+  },
+  {
+    question: "Abstract Expressionist artists like Jackson Pollock were primarily focused on:",
+    options: [
+      "critiquing social and political issues.",
+      "depicting the beauty of the natural world.",
+      "representing the struggles of the working class.",
+      "exploring emotional and psychological states.",
+      "promoting moral instruction through art."
+    ],
+    correctAnswer: "exploring emotional and psychological states.",
+    explanation: "The passage explains that Abstract Expressionism focused on the 'internal, subjective experience of the artist' and explored 'emotional and psychological states.' This is a hallmark of the movement, making it the correct answer."
+  },
+  {
+    question: "Which of the following best describes the ongoing debate over the purpose of art, as presented in the passage?",
+    options: [
+      "Art should solely provide aesthetic pleasure without addressing societal concerns.",
+      "Art should avoid political themes to remain accessible to all audiences.",
+      "Art should either address pressing societal issues or offer beauty and solace.",
+      "Art must prioritize the representation of the human form and nature.",
+      "Art should return to the moralistic approach of the ancient philosophers."
+    ],
+    correctAnswer: "Art should either address pressing societal issues or offer beauty and solace.",
+    explanation: "The passage presents this as the crux of the ongoing debate. Some argue that art should tackle important issues like climate change and inequality, while others believe it should provide beauty and emotional comfort. This answer reflects both sides of the debate."
+  },
+  {
+    question: "The author mentions the Modernist movement primarily to:",
+    options: [
+      "explain how artists returned to depicting moral truths.",
+      "show how art became more focused on social critique and challenging norms.",
+      "highlight the continued emphasis on individual expression in art.",
+      "describe the influence of Renaissance artists on modern painting techniques.",
+      "demonstrate how art shifted away from addressing political concerns."
+    ],
+    correctAnswer: "show how art became more focused on social critique and challenging norms.",
+    explanation: "The passage mentions that Modernism involved artists who used their work to 'critique established norms and challenge the status quo.' This shows that Modernism was deeply engaged with social critique, making this the correct answer."
+  },
+  {
+    question: "The passage suggests that Renaissance artists like Leonardo da Vinci and Michelangelo differed from Plato in that they:",
+    options: [
+      "believed art should be focused on political and social issues.",
+      "rejected the idea that art should serve any moral or instructional purpose.",
+      "emphasized the creation of beautiful images without concern for social impact.",
+      "combined individual creativity with a focus on moral instruction.",
+      "prioritized the depiction of ordinary people over idealized forms."
+    ],
+    correctAnswer: "emphasized the creation of beautiful images without concern for social impact.",
+    explanation: "The passage explains that Renaissance artists like da Vinci and Michelangelo focused on 'individual creativity and expression' and the 'beauty of the human form.' Their work was less concerned with societal or moral impact than Plato's, making this the correct answer."
+  },
+  // New questions for Section I: Reading Comprehension
+  {
+    question: "What was the main benefit of the development of fMRI and PET technology for cognitive neuroscience research?",
+    options: [
+      "It allowed researchers to directly study individuals with brain damage.",
+      "It enabled the observation of brain activity in real time during cognitive tasks.",
+      "It helped scientists completely map out the human brain.",
+      "It replaced all other methods of studying brain function.",
+      "It simplified the process of diagnosing neurological disorders."
+    ],
+    correctAnswer: "It enabled the observation of brain activity in real time during cognitive tasks.",
+    explanation: "The passage explains that neuroimaging technologies like fMRI and PET scans allowed researchers to 'observe and measure brain activity in real time' during cognitive tasks. This provided a major advantage over previous methods."
+  },
+  {
+    question: "Before neuroimaging technologies, what was the primary method used to study the brain's role in cognition?",
+    options: [
+      "Conducting experiments on animals.",
+      "Monitoring real-time brain activity with electroencephalograms (EEGs).",
+      "Observing individuals with brain damage or abnormalities.",
+      "Using computer simulations to model brain function.",
+      "Studying the brains of healthy individuals during complex tasks."
+    ],
+    correctAnswer: "Observing individuals with brain damage or abnormalities.",
+    explanation: "The passage mentions that before fMRI and PET, researchers mainly relied on studying individuals with brain damage, which helped them understand the roles of specific brain regions in cognition."
+  },
+  {
+    question: "The passage implies that one limitation of early studies on individuals with brain damage was that:",
+    options: [
+      "brain damage rarely occurred in isolated regions.",
+      "brain damage did not affect cognitive functions.",
+      "early researchers did not understand how to study the hippocampus.",
+      "scientists could not locate the specific areas of the brain affected by brain damage.",
+      "patients with brain damage could not participate in neuroimaging studies."
+    ],
+    correctAnswer: "brain damage rarely occurred in isolated regions.",
+    explanation: "The passage states that studying patients with brain damage was limited by the fact that 'brain damage rarely occurs in isolated areas,' which made it difficult to isolate the effects of damage on specific cognitive functions."
+  },
+  {
+    question: "Which of the following does the author suggest about the current state of cognitive neuroscience?",
+    options: [
+      "It has provided all the answers about how the brain works.",
+      "The field has made progress but remains in its early stages.",
+      "Most of the research in this field focuses on brain damage.",
+      "Researchers have solved the complexity of cognitive processes.",
+      "The use of neuroimaging has ended the need for further brain studies."
+    ],
+    correctAnswer: "The field has made progress but remains in its early stages.",
+    explanation: "The passage notes that while much progress has been made, cognitive neuroscience 'is still in its early stages' and there are still many complexities and unanswered questions."
+  },
+  {
+    question: "According to the passage, one of the areas in which neuroimaging has provided new insights is:",
+    options: [
+      "memory consolidation in animals.",
+      "diagnosing physical injuries to the brain.",
+      "understanding how specific regions of the brain interact during decision-making.",
+      "mapping the exact number of neurons in each brain region.",
+      "studying emotional reactions without neural involvement."
+    ],
+    correctAnswer: "understanding how specific regions of the brain interact during decision-making.",
+    explanation: "The passage explains that neuroimaging has shown that decision-making involves 'multiple brain areas,' including those responsible for emotions, memory, and social reasoning."
   }
 ]
 
@@ -207,6 +353,7 @@ interface GeneratedQuestion {
   options: string[];
   correctAnswer: string;
   explanation: string;
+  passage?: string; // Add this line
 }
 
 function ProgressCard({ progress }: { progress: UserProgress }) {
@@ -271,28 +418,6 @@ function useUserProgress(userId: string | null, db: Firestore | null) {
 
   return { userProgress, setUserProgress, loadUserProgress };
 }
-
-const mockPassage = `The evolution of cities has always been closely tied to technological advancements. In the 19th century, the steam engine revolutionized transportation, enabling the development of railways and, in turn, the rapid growth of urban centers. Factories, once scattered across rural areas, began clustering in cities, and workers followed suit, resulting in the dense urban landscapes that characterized the Industrial Revolution. This mass migration was driven by the promise of economic opportunities, but it also brought about significant challenges, including overcrowding, poor sanitation, and the spread of disease.
-
-In response to these challenges, urban planners and architects began developing new approaches to city design. In the early 20th century, the Garden City movement, founded by Ebenezer Howard, emerged as a reaction to the negative effects of industrialization. Howard envisioned self-contained communities surrounded by green spaces, with a balance of residential, commercial, and agricultural areas. His ideas sought to blend the best aspects of urban and rural life, promoting healthier living conditions while maintaining access to economic opportunities. Although only a few true garden cities were ever built, the movement influenced the development of suburbs and the layout of modern cities.
-
-By the mid-20th century, the rise of the automobile further transformed urban environments. Cities expanded outward as highways and road networks were constructed, allowing people to live farther from their workplaces. The post-World War II suburban boom in the United States exemplifies this trend, as millions of people moved to newly built suburban neighborhoods, drawn by the promise of more space, privacy, and a perceived higher quality of life. However, this shift had its own drawbacks. Suburban sprawl led to increased reliance on automobiles, contributing to traffic congestion, air pollution, and a loss of open land.
-
-In the 21st century, cities face new challenges and opportunities related to technology. The rise of the internet and digital communication has enabled more people to work remotely, raising questions about the future of urban living. Some experts argue that cities will become less central to economic activity as more people choose to live in smaller towns or rural areas while staying connected through technology. Others believe that cities will continue to thrive, as they offer cultural, social, and economic advantages that cannot be easily replicated in less densely populated areas.
-
-At the same time, new technologies are reshaping urban infrastructure. "Smart cities," which integrate digital technology into transportation, energy, and public services, are becoming increasingly common. Proponents argue that smart cities can improve efficiency, reduce waste, and enhance the quality of life for residents. For example, sensor networks can monitor traffic in real time, helping to reduce congestion and lower emissions. Similarly, smart energy grids can optimize electricity use, reducing energy consumption and costs. However, critics raise concerns about privacy and security, as the widespread collection of data in smart cities could potentially be misused.
-
-Ultimately, the future of cities will likely depend on how well they can adapt to technological changes while addressing the social, environmental, and economic challenges that have always been part of urban life. As cities continue to evolve, finding a balance between innovation and sustainability will be key to ensuring that urban areas remain vibrant, livable, and resilient in the face of ongoing change.
-
-In the early stages of agricultural development, farming communities around the world faced numerous challenges that threatened the sustainability of their settlements. One of the most significant of these challenges was the depletion of soil nutrients, which could lead to a decline in crop yields and eventually force communities to abandon their land in search of more fertile areas. To address this, ancient farmers developed various methods to maintain the fertility of their soil, including crop rotation, the use of animal manure, and the introduction of nitrogen-fixing plants such as legumes. These innovations allowed early agricultural societies to sustain their food production over long periods of time.
-
-However, the rise of industrial agriculture in the 20th century brought about a different set of challenges. While the widespread use of synthetic fertilizers and pesticides led to significant increases in crop yields, it also resulted in a range of environmental issues. The excessive use of synthetic fertilizers, for example, has led to the contamination of water supplies with nitrates, contributing to the growth of harmful algal blooms in rivers, lakes, and oceans. Additionally, the reliance on monoculture — the cultivation of a single crop over vast areas — has reduced biodiversity, making crops more vulnerable to pests and diseases. Despite these problems, industrial agriculture has become the dominant model of food production globally, largely due to its efficiency and ability to meet the growing demands of a rapidly expanding population.
-
-In response to the environmental concerns associated with industrial agriculture, a movement known as sustainable agriculture has gained traction in recent decades. Advocates of sustainable agriculture argue that it is possible to produce food in a way that minimizes harm to the environment while still meeting the needs of human populations. Key practices in sustainable agriculture include the use of organic fertilizers, integrated pest management (IPM) to control pests without relying solely on chemical pesticides, and agroforestry, which involves the integration of trees and other perennial plants into agricultural systems to promote biodiversity and improve soil health.
-
-One prominent example of a sustainable agriculture practice is permaculture, a holistic approach to farming that seeks to create self-sustaining agricultural ecosystems by mimicking the diversity and resilience of natural ecosystems. Permaculture emphasizes the importance of working with nature rather than against it, encouraging farmers to consider factors such as water management, soil health, and biodiversity in their decision-making processes. Though permaculture is often practiced on a small scale, its principles have inspired many larger-scale farming operations to adopt more sustainable methods.
-
-Despite the promise of sustainable agriculture, it remains a relatively small part of global food production. Critics argue that sustainable farming practices are less efficient and cannot produce the same high yields as industrial agriculture, making them insufficient to feed the world's growing population. Proponents, however, contend that the long-term benefits of sustainable agriculture, including healthier ecosystems and more resilient food systems, outweigh any short-term reduction in yields. They also argue that many of the environmental and social costs of industrial agriculture, such as pollution and the displacement of small farmers, are not accounted for in conventional economic models.`;
 
 export default function DashboardPage() {
   const [user, setUser] = useState<FirebaseUser | null>(null)
@@ -518,8 +643,8 @@ export default function DashboardPage() {
     }
   };
 
-  const handleGeneratedAnswer = async (option: string) => {
-    setSelectedAnswer(option);
+  const handleGeneratedAnswer = async (letter: string) => {
+    setSelectedAnswer(letter);
     setShowExplanation(true);
     if (user && currentGeneratedQuestion && selectedTopic && db) {
       const userDocRef = doc(db, 'users', user.uid);
@@ -530,7 +655,7 @@ export default function DashboardPage() {
       const topicField = selectedTopic.replace(/\s+/g, '');
       updateData[`${topicField}Total`] = increment(1);
 
-      const isCorrect = option === currentGeneratedQuestion.correctAnswer;
+      const isCorrect = letter === currentGeneratedQuestion.correctAnswer;
       if (isCorrect) {
         updateData[`R${topicField}`] = increment(1);
       }
@@ -628,7 +753,11 @@ export default function DashboardPage() {
                   <p className="whitespace-pre-line">
                     {currentQuestion < 13 
                       ? mockPassage.split('\n\n').slice(0, 6).join('\n\n')  // First 6 paragraphs for urban questions
-                      : mockPassage.split('\n\n').slice(6).join('\n\n')     // Last 5 paragraphs for agricultural questions
+                      : currentQuestion < 15
+                        ? mockPassage.split('\n\n').slice(6).join('\n\n')   // Last 5 paragraphs for agricultural questions
+                        : currentQuestion < 22
+                          ? artPassage                                      // Art passage for questions 15-21
+                          : cognitiveNeurosciencePassage                    // Cognitive neuroscience passage for questions 22-26
                     }
                   </p>
                 </div>
@@ -685,24 +814,31 @@ export default function DashboardPage() {
               </div>
             </TabsContent>
             <TabsContent value="overview">
-              <div className="grid grid-cols-5 gap-4">
-                {questionStatus.map((status, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => jumpToQuestion(index)}
-                    variant={status === 'answered' ? 'default' : status === 'unsure' ? 'outline' : 'secondary'}
-                    className={`w-full h-12 flex items-center justify-center ${currentQuestion === index ? 'ring-2 ring-yellow-500' : ''}`}
-                  >
-                    <span className="mr-1">{index + 1}</span>
-                    {status === 'unsure' && (
-                      <Bookmark className="h-4 w-4 text-yellow-500" />
-                    )}
-                    {status === 'answered' && (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    )}
-                  </Button>
-                ))}
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Section I: Reading Comprehension</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-5 gap-4">
+                    {questionStatus.map((status, index) => (
+                      <Button
+                        key={index}
+                        onClick={() => jumpToQuestion(index)}
+                        variant={status === 'answered' ? 'default' : status === 'unsure' ? 'outline' : 'secondary'}
+                        className={`w-full h-12 flex items-center justify-center ${currentQuestion === index ? 'ring-2 ring-yellow-500' : ''}`}
+                      >
+                        <span className="mr-1">{index + 1}</span>
+                        {status === 'unsure' && (
+                          <Bookmark className="h-4 w-4 text-yellow-500" />
+                        )}
+                        {status === 'answered' && (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         ) : (
@@ -803,42 +939,81 @@ export default function DashboardPage() {
                       <Button onClick={() => generateNewQuestion(selectedTopic)} className="mt-4">Try Again</Button>
                     </div>
                   ) : currentGeneratedQuestion ? (
-                    <div>
-                      <p className="mb-4">{currentGeneratedQuestion.question}</p>
-                      <div className="space-y-2">
-                        {currentGeneratedQuestion.options.map((option, index) => (
-                          <Button
-                            key={index}
-                            onClick={() => handleGeneratedAnswer(`${String.fromCharCode(65 + index)}`)}
-                            className={`w-full text-left justify-start ${
-                              selectedAnswer === `${String.fromCharCode(65 + index)}` ? 'bg-gray-200' : ''
-                            }`}
-                            variant="outline"
-                            disabled={showExplanation}
-                          >
-                            {`${String.fromCharCode(65 + index)}) ${option}`}
-                            {showExplanation && `${String.fromCharCode(65 + index)}` === currentGeneratedQuestion.correctAnswer && (
-                              <CheckCircle className="ml-2 text-green-500" />
-                            )}
-                            {showExplanation && selectedAnswer === `${String.fromCharCode(65 + index)}` && `${String.fromCharCode(65 + index)}` !== currentGeneratedQuestion.correctAnswer && (
-                              <X className="ml-2 text-red-500" />
-                            )}
-                          </Button>
-                        ))}
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="w-full md:w-2/3">
+                        {currentGeneratedQuestion.passage && (
+                          <div className="mb-4 p-4 bg-gray-100 rounded-md overflow-y-auto max-h-60">
+                            <h3 className="font-bold mb-2">Passage:</h3>
+                            <p>{currentGeneratedQuestion.passage}</p>
+                          </div>
+                        )}
+                        <p className="mb-4">{currentGeneratedQuestion.question}</p>
+                        <div className="space-y-2">
+                          {currentGeneratedQuestion.options.map((option, index) => {
+                            const letter = String.fromCharCode(65 + index);
+                            const isSelected = selectedAnswer === letter;
+                            const isCorrect = letter === currentGeneratedQuestion.correctAnswer;
+                            return (
+                              <Button
+                                key={index}
+                                onClick={() => handleGeneratedAnswer(letter)}
+                                className={`w-full text-left justify-start ${
+                                  isSelected ? (isCorrect ? 'bg-green-200' : 'bg-red-200') : ''
+                                } ${
+                                  showExplanation && isCorrect ? 'bg-green-200' : ''
+                                }`}
+                                variant="outline"
+                                disabled={showExplanation}
+                              >
+                                {`${letter}) ${option}`}
+                                {showExplanation && isCorrect && (
+                                  <CheckCircle className="ml-2 text-green-500" />
+                                )}
+                                {showExplanation && isSelected && !isCorrect && (
+                                  <X className="ml-2 text-red-500" />
+                                )}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                        {showExplanation && (
+                          <div className="mt-4">
+                            <p>Correct Answer: {currentGeneratedQuestion.correctAnswer}</p>
+                            <p>{currentGeneratedQuestion.explanation}</p>
+                            <Button onClick={() => generateNewQuestion(selectedTopic)} className="mt-4">Next Question</Button>
+                            <Button 
+                              onClick={bookmarkQuestion} 
+                              variant="outline"
+                              className={`mt-4 ml-2 ${isBookmarked ? 'bg-yellow-100 text-yellow-600' : ''}`}
+                            >
+                              <Bookmark className={`mr-2 h-4 w-4 ${isBookmarked ? 'fill-yellow-600' : ''}`} /> {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       {showExplanation && (
-                        <div className="mt-4">
-                          <p>Correct Answer: {currentGeneratedQuestion.correctAnswer}</p>
-                          <p>{currentGeneratedQuestion.explanation}</p>
-                          <Button onClick={() => generateNewQuestion(selectedTopic)} className="mt-4">Next Question</Button>
-                          <Button 
-                            onClick={bookmarkQuestion} 
-                            variant="outline"
-                            className={`mt-4 ${isBookmarked ? 'bg-yellow-100 text-yellow-600' : ''}`}
-                          >
-                            <Bookmark className={`mr-2 h-4 w-4 ${isBookmarked ? 'fill-yellow-600' : ''}`} /> {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                          </Button>
-                        </div>
+                        <Card className="w-full md:w-1/3">
+                          <CardHeader>
+                            <CardTitle>Explanation</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <h3 className="font-bold mb-2">Correct Answer:</h3>
+                            <p className="mb-4">{currentGeneratedQuestion.explanation}</p>
+                            <h3 className="font-bold mb-2">Why other answers are incorrect:</h3>
+                            {currentGeneratedQuestion.options.map((option, index) => {
+                              const letter = String.fromCharCode(65 + index);
+                              if (letter !== currentGeneratedQuestion.correctAnswer) {
+                                return (
+                                  <div key={index} className="mb-2">
+                                    <p className="font-semibold">{letter}) {option}</p>
+                                    <p>This option is incorrect because... [Explanation to be added]</p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+                          </CardContent>
+                        </Card>
                       )}
                     </div>
                   ) : (
