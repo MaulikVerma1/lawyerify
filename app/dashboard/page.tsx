@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth"
+import { User as FirebaseUser, onAuthStateChanged, signOut } from "firebase/auth"
 import { doc, getDoc, setDoc, updateDoc, increment, DocumentData, FieldValue } from "firebase/firestore"
 import { useFirebase } from '../../hooks/useFirebase'
 import { Button } from "../../components/ui/button"
@@ -13,7 +12,11 @@ import { ProgressSlider } from '../../components/ProgressSlider'
 import { Firestore } from "firebase/firestore"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
 import { mockPassage, artPassage, cognitiveNeurosciencePassage } from './passages'
-// import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
+import { StripePaymentForm } from '../../components/StripePaymentForm'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 // Mock questions for the practice test
 const mockQuestions = [
@@ -438,6 +441,8 @@ export default function DashboardPage() {
   const { userProgress, setUserProgress, loadUserProgress } = useUserProgress(user?.uid || null, db)
   const [questionStatus, setQuestionStatus] = useState<Array<'unanswered' | 'answered' | 'unsure'>>([]);
   const [activeTab, setActiveTab] = useState("questions");
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
 
   const ensureUserDocument = useCallback(async (userId: string) => {
     if (!db) return;
@@ -483,7 +488,57 @@ export default function DashboardPage() {
     return () => unsubscribe();
   }, [auth, db, ensureUserDocument, loadUserProgress, setUserProgress]);
 
-  const startTest = () => {
+  useEffect(() => {
+    if (!isPremium) {
+      fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.clientSecret) {
+            setClientSecret(data.clientSecret);
+          } else {
+            console.error('Failed to create PaymentIntent:', data.error);
+          }
+        })
+        .catch((error) => console.error('Error creating PaymentIntent:', error));
+    }
+  }, [isPremium]);
+
+  useEffect(() => {
+    if (user && db) {
+      const checkPremiumStatus = async () => {
+        const userDocRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          setIsPremium(docSnap.data().isPremium || false);
+        }
+      };
+      checkPremiumStatus();
+    }
+  }, [user, db]);
+
+  const handlePaymentSuccess = async () => {
+    if (user && db) {
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, { isPremium: true });
+      setIsPremium(true);
+      console.log('Payment successful, user updated to premium');
+    }
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log('User logged out successfully');
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  const startTest = () => {  // Remove 'testNumber' parameter
     setShowTest(true);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
@@ -702,6 +757,19 @@ export default function DashboardPage() {
     }
   }, [showExplanation, user, loadUserProgress]);
 
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientSecret(data.clientSecret);
+      })
+      .catch((error) => console.error('Error:', error));
+  }, []);
+
   if (!auth || !db) {
     return <div>Loading...</div>
   }
@@ -721,11 +789,7 @@ export default function DashboardPage() {
             <Gavel className="h-10 w-10 mr-3 text-indigo-600" />
             <h1 className="text-4xl font-bold text-gray-900">Lawerify Dashboard</h1>
           </div>
-          {/* Comment out or remove the Avatar component */}
-          {/* <Avatar className="h-16 w-16">
-            <AvatarImage src="/avatar-placeholder.png" alt="User avatar" />
-            <AvatarFallback>US</AvatarFallback>
-          </Avatar> */}
+          <Button onClick={handleLogout} variant="outline">Logout</Button>
         </div>
         
         {showTest ? (
@@ -869,35 +933,34 @@ export default function DashboardPage() {
             
             <h2 className="text-3xl font-bold mb-6 text-gray-800">Practice Tests</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">LSAT Practice Test 1</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userProgress.totalTestsCompleted > 0 ? (
-                    <>
-                      <p className="text-lg">Latest Score: <span className="font-bold text-indigo-600">{userProgress.latestTestScore}</span> / {mockQuestions.length}</p>
-                      <p className="text-lg">Percentage: <span className="font-bold text-indigo-600">{((userProgress.latestTestScore / mockQuestions.length) * 100).toFixed(2)}%</span></p>
-                    </>
-                  ) : (
-                    <p className="text-lg">You haven&apos;t taken this test yet.</p>
-                  )}
-                  <Button onClick={startTest} className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                    {userProgress.totalTestsCompleted > 0 ? 'Retake Test' : 'Start Test'}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {[2, 3, 4, 5].map((testNumber) => (
+              {[1, 2, 3, 4, 5].map((testNumber) => (
                 <Card key={testNumber} className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
                   <CardHeader>
                     <CardTitle className="text-xl font-bold">LSAT Practice Test {testNumber}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg">This test is locked.</p>
-                    <Button disabled className="mt-4 w-full bg-gray-300 text-gray-600 cursor-not-allowed">
-                      <Lock className="mr-2 h-4 w-4" /> Unlock
-                    </Button>
+                    {testNumber === 1 || isPremium ? (
+                      <>
+                        {userProgress.totalTestsCompleted > 0 ? (
+                          <>
+                            <p className="text-lg">Latest Score: <span className="font-bold text-indigo-600">{userProgress.latestTestScore}</span> / {mockQuestions.length}</p>
+                            <p className="text-lg">Percentage: <span className="font-bold text-indigo-600">{((userProgress.latestTestScore / mockQuestions.length) * 100).toFixed(2)}%</span></p>
+                          </>
+                        ) : (
+                          <p className="text-lg">You haven&apos;t taken this test yet.</p>
+                        )}
+                        <Button onClick={() => startTest()} className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                          {userProgress.totalTestsCompleted > 0 ? 'Retake Test' : 'Start Test'}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-lg">This test is locked.</p>
+                        <Button disabled className="mt-4 w-full bg-gray-300 text-gray-600 cursor-not-allowed">
+                          <Lock className="mr-2 h-4 w-4" /> Unlock
+                        </Button>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -1020,6 +1083,25 @@ export default function DashboardPage() {
                 <Bookmark className="mr-2 h-4 w-4" /> View Bookmarked Questions
               </Button>
             </div>
+            
+            {!isPremium && (
+              <Card className="mb-8 bg-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">Premium Plan</CardTitle>
+                  <CardDescription>Get access to all practice tests and features</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold mb-4">$19.99/month</p>
+                  {clientSecret ? (
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <StripePaymentForm clientSecret={clientSecret} onSuccess={handlePaymentSuccess} />
+                    </Elements>
+                  ) : (
+                    <p>Loading payment form...</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>
