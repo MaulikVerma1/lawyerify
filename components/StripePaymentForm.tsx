@@ -48,8 +48,14 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export const StripePaymentForm = ({ clientSecret, onSuccess }: { clientSecret: string, onSuccess: () => void }) => (
-  <Elements stripe={stripePromise} options={{ clientSecret }}>
-    <CheckoutForm onSuccess={onSuccess} />
-  </Elements>
-);
+export const StripePaymentForm = ({ clientSecret, onSuccess }: { clientSecret: string, onSuccess: () => void }) => {
+  if (!clientSecret) {
+    return <p>Error: No client secret available</p>;
+  }
+
+  return (
+    <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <CheckoutForm onSuccess={onSuccess} />
+    </Elements>
+  );
+};

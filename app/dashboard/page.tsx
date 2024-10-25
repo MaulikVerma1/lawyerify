@@ -490,19 +490,28 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isPremium) {
+      console.log('Fetching PaymentIntent...');
       fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then((data) => {
+          console.log('PaymentIntent received:', data);
           if (data.clientSecret) {
             setClientSecret(data.clientSecret);
           } else {
             console.error('Failed to create PaymentIntent:', data.error);
           }
         })
-        .catch((error) => console.error('Error creating PaymentIntent:', error));
+        .catch((error) => {
+          console.error('Error creating PaymentIntent:', error);
+        });
     }
   }, [isPremium]);
 

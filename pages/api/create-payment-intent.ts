@@ -8,16 +8,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      // Create a PaymentIntent with the order amount and currency
+      console.log('Creating PaymentIntent...');
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: 1999, // Amount in cents
+        amount: 1999,
         currency: 'usd',
-        // Add any additional options here
       });
-
-      // Send the client secret to the client
+      console.log('PaymentIntent created:', paymentIntent.id);
       res.status(200).json({ clientSecret: paymentIntent.client_secret });
     } catch (err) {
+      console.error('Error creating PaymentIntent:', err);
       res.status(500).json({ statusCode: 500, message: (err as Error).message });
     }
   } else {
